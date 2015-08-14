@@ -163,7 +163,7 @@
 		   }
 	   });
 	   $(document).on('click', '.cantidad', function (){
-		   $('#indice').text($(this).parent().index());
+//		   $('#indice').text($(this).parent().index());
 		   $('.cantidad').editable(function(value, settings) {
 			     return(value);
 			  }, {
@@ -271,7 +271,7 @@
 		   				'<td class="descuento" ></td>'+
 	            		'<td class="importe"></td>'+
 	            		'<td class="bodega"></td>'+
-	            		'<td class="envio"></td>'+
+	            		'<td class="envio"><input type="checkbox"></td>'+
 	            		'<td class="dm" ></td>'+
 	            		'<td class="obser"></td>'+
 	            		'<td class="kit"></td>'+
@@ -368,7 +368,7 @@
         });
 	   //Seleccionar producto de Bodega alterna
 	   
-	   $jq("table[id$='tablaProductosBodega'] td:nth-child(1)").live('click',function(event) {  
+	   $jq("table[id$='tablaProductosBodega'] td").live('click',function(event) {  
 			//Para evitar que el link actue.  
 		   event.preventDefault();  
 		   var $td= $(this).closest('tr').children('td');
@@ -391,7 +391,7 @@
 		   
 		   
 		   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.importe').text(resultado);
-		   
+		   sumarColumnaImporte();
 	   });
         
         
@@ -408,62 +408,62 @@
 	   $('#grabarDocumento').click(function(){
 		   var numFilas = $('#datosVarios >tbody >tr').length;
 		   $('#numFilas').text(numFilas);
-//		   $.post('IngresarEnc',{
-//			   codigoCliente : $('#codigoCliente').text(), nit : $('#nit').val(), nombreCliente : $('#nombre').val(),
-//			   direcFactura : $('#direcF').val(), tel : $('#telefono').val(), tarjeta : $('#tarjeta').val(),
-//			   direcEnvio : $('#direcE').val(), tipoDoc : separarTexto(0, $('#tDoc').val()), fechaVence : $('#fechaVencimiento').val(),
-//			   tipoPago : separarTexto(0, $('#fPago').val()), tipoCredito : $('#tCredito').val(), autoriza : "S",
-//			   fechaDoc : $('#fechaEntrega').val(), cargosEnvio : 0, otrosCargos: 0,
-//			   montoVenta: separarTexto(1, $('#subTotal').text()), montoTotal : separarTexto(1, $('#total').text()), tipoNota : 0,
-//			   caja : 0 , fechaEntrega : $('#fechaEntrega').val(), noConsigna : 0 , codMovDev : 0,
-//			   generaSolicitud : 'N', tipoPagoNC : 0 , tipoCliente : $('#tipoCliente').text(),
-//			   codigoNegocio : "", cantidadDevolver : 0, autorizoDespacho : "", 
-//			   saldo : $('#saldoCliente').text()
-//		   } ,function(responseText) {
-//			   if(responseText!=null){
-//				   $('#numDocumento').text(responseText);
-//			   }
-//					   
-//		   });
+		   $.post('IngresarEnc',{
+			   codigoCliente : $('#codigoCliente').text(), nit : $('#nit').val(), nombreCliente : $('#nombre').val(),
+			   direcFactura : $('#direcF').val(), tel : $('#telefono').val(), tarjeta : $('#tarjeta').val(),
+			   direcEnvio : $('#direcE').val(), tipoDoc : separarTexto(0, $('#tDoc').val()), fechaVence : $('#fecha').text(),
+			   tipoPago : separarTexto(0, $('#fPago').val()), tipoCredito : $('#tCredito').val(), autoriza : "S",
+			   fechaDoc : $('#fecha').text(), cargosEnvio : 0, otrosCargos: 0,
+			   montoVenta: separarTexto(1, $('#subTotal').text()), montoTotal : separarTexto(1, $('#total').text()), tipoNota : 0,
+			   caja : 0 , fechaEntrega : $('#fecha').text(), noConsigna : 0 , codMovDev : 0,
+			   generaSolicitud : 'N', tipoPagoNC : 0 , tipoCliente : $('#tipoCliente').text(),
+			   codigoNegocio : "", cantidadDevolver : 0, autorizoDespacho : "", 
+			   saldo : $('#saldoCliente').text()
+		   } ,function(responseText) {
+			   if(responseText!=null){
+				   $('#numDocumento').text(responseText);
+			   }
+					   
+		   });
 		   $('#datosVarios tbody tr').each(function (index){
-			   codigoP = $('#datosVarios > tbody > tr').eq(index).children().eq(0).children().text();
-			   descripcion = $('#datosVarios > tbody > tr').eq(index).children().eq(2).children().text();
-			   medida = $('#datosVarios > tbody > tr').eq(index).children().eq(1).children().text();
-			   cantidad = $('#datosVarios > tbody > tr').eq(index).children().eq(3).children().text();
-			   disponible = $('#datosVarios > tbody > tr').eq(index).children().eq(4).children().text();
-			   precioU = $('#datosVarios > tbody > tr').eq(index).children().eq(5).children().text();
-			   if($('#datosVarios > tbody > tr').eq(index).children().eq(6).children().val()==''){
+			   var bod, kit;
+			   codigoP = $('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text();
+			   descripcion = $('#datosVarios > tbody > tr').eq(index).find('.descripcion').text();
+			   medida = $('#datosVarios > tbody > tr').eq(index).find('.medida').text();
+			   cantidad = $('#datosVarios > tbody > tr').eq(index).find('.cantidad').text();
+			   disponible = $('#datosVarios > tbody > tr').eq(index).find('.disponible').text();
+			   precioU = $('#datosVarios > tbody > tr').eq(index).find('.precio').text();
+			   if($('#datosVarios > tbody > tr').eq(index).find('.porcentaje').text()==''){
 				   porDesc = 0.00;
 			   }else{
 
-				   porDesc = $('#datosVarios > tbody > tr').eq(index).children().eq(6).children().val();
+				   porDesc = $('#datosVarios > tbody > tr').eq(index).find('.porcentaje').text();
 			   }
-			   descuento = $('#datosVarios > tbody > tr').eq(index).children().eq(7).children().val();
-			   importe = $('#datosVarios > tbody > tr').eq(index).children().eq(8).children().val();
-			   bodega = $('#datosVarios > tbody > tr').eq(index).children().eq(9).children().val();
-			   if($('#envia').prop('checked')){
+			   descuento = $('#datosVarios > tbody > tr').eq(index).find('.descuento').text();
+			   importe = $('#datosVarios > tbody > tr').eq(index).find('.importe').text();
+			   bod = $('#datosVarios > tbody > tr').eq(index).find('.bodega').text();
+			   if($('#datosVarios > tbody > tr').eq(index).find('.envio').children().prop('checked')){
 				   envio = 1;
 			   }else{
 				   envio = 0;
 			   }
-			   dm = $('#datosVarios > tbody > tr').eq(index).children().eq(10).children().val();
-			   observ = $('#datosVarios > tbody > tr').eq(index).children().eq(11).children().val();
-			   alert(codigoP);
-			   alert(descripcion);
-			   alert(medida);
-//			   $.post('IngresarDet',{
-//				   tipoDocumento : separarTexto(0, $('#tDoc').val()), serieDocumento : '', numeroDocumento : 57020, numCorrelativo : 1, codigoProducto : codigoP,
-//				   UMedida : medida, cantidad: cantidad, precio : precioU, porDescuento : porDesc, descuento : descuento, total: importe, codigoCliente : $('#codigoCliente').text(),
-//				   promo : 0, bodega : bodega, envio : envio, observaciones : observ, lista : 1, pago : separarTexto(0, $('#fPago').val()), kit : 'N', corrKit : 0, codPromo : 0,
-//				   serieDevProy : '', numDevProy : '0', ordenCompra : 0
-//				   
-//				   
-//			   } ,function(responseText) {
-//				   if(responseText!=null){
-//					   $('#mensaje').text(responseText);
-//				   }
-//						   
-//			   });
+			   dm = $('#datosVarios > tbody > tr').eq(index).find('.dm').text();
+			   observ = $('#datosVarios > tbody > tr').eq(index).find('.obser').text();
+			   kit = $('#datosVarios > tbody > tr').eq(index).find('.kit').text();
+			   
+			   $.post('IngresarDet',{
+				   tipoDocumento : separarTexto(0, $('#tDoc').val()), serieDocumento : '', numeroDocumento : $('#numDocumento').text(), numCorrelativo : 1, codigoProducto : codigoP,
+				   UMedida : medida, cantidad: cantidad, precio : precioU, porDescuento : porDesc, descuento : descuento, total: importe, codigoCliente : $('#codigoCliente').text(),
+				   promo : 0, bodega : bod, envio : envio, observaciones : observ, lista : $('#codigoLista').text(), pago : separarTexto(0, $('#fPago').val()), kit : kit, corrKit : 0, codPromo : 0,
+				   serieDevProy : '', numDevProy : '0', ordenCompra : 0
+				   
+				   
+			   } ,function(responseText) {
+				   if(responseText!=null){
+					   alert('documento grabado con numero: ' + $('#numDocumento').text());
+				   }
+						   
+			   });
 		   });
 		   
 //		   
@@ -496,12 +496,13 @@
 		 					  
 		 				   }
 		 			    });
-		 			  
+		 			  sumarColumnaImporte();
 		 		   }
 		 				   
 		 	   });
    }
    function ejecutarCantidad(cantidad, indiceFila){
+	   $('#indice').text(indiceFila);
 	   var importe;
 	   var cantDisp;
 	   var cp;
@@ -517,6 +518,16 @@
 	   }
 	   
 	   
+   }
+   function sumarColumnaImporte(){
+	   var sum = 0;
+	    $('.importe').each(function() {
+	        sum += Number($(this).text());
+	    });
+	    console.log(sum);
+	    $('#subTotal').text('SubTotal: ' + parseFloat(sum).toFixed(2));
+	    $('#total').text('Total: ' + parseFloat(sum).toFixed(2));
+
    }
    function obtenerImporteSinDescuento(){
 	   

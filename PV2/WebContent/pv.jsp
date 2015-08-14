@@ -138,7 +138,7 @@
 	                    		<td class="descuento" ></td>
 	                    		<td class="importe"></td>
 	                    		<td class="bodega"></td>
-	                    		<td class="envio"></td>
+	                    		<td class="envio"><input type="checkbox"></td>
 	                    		<td class="dm" ></td>
 	                    		<td class="obser"></td>
 	                    		<td class="kit"></td>
