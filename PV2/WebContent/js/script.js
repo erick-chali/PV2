@@ -7,16 +7,7 @@
 	   var Total;
 	   var temporal;
 	   var autorizado = 1;
-	   
-	   $('#codigoProducto').editable(function(value, settings) {
-		     console.log(this);
-		     console.log(value);
-		     console.log(settings);
-		     return(value);
-		  }, {
-		     onblur  : 'submit',
-		 });
-	    
+	   $('#fechaEntrega').mask('99/99/9999',{placeholder:"dd/mm/yyyy"});
 	   
 //	   $('#indice').hide();
 	   $('.datosOcultos').hide();
@@ -37,6 +28,11 @@
                $('#buscarClientes').modal('toggle');
                $('#filtroTextoClientes').val('');
                $('#contenedorClientes').empty();
+           }else if(e.keyCode==118){
+        	   e.preventDefault();
+	   			$('#filtroTextoProductos').val('');
+	   			$('#contenedorProductos').empty();
+	   			$('#buscarProductos').modal('toggle');
            }
 	   });
 	   /**EVENTOS*/
@@ -89,50 +85,6 @@
 	   			}
             }
         });
-	   $(document).on('keydown', '#cantidad',function(e){
-		   if(e.keyCode==13){
-			   var indiceFila = $(this).parent().parent().index();
-	   			$('#indice').text(indiceFila);
-	   			codigoP = $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(0).children().val();
-	   			$('#codigoProd').text(codigoP);
-			   var $td= $(this).closest('tr').children('td').children('input');
-			   var $td2= $(this).closest('tr').children('td').children('div').children('input');
-			   var canti = parseInt($('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(3).children().val());
-			   var disp = parseInt($('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(4).children().val());
-			   if(canti > disp){
-				   
-		   			
-		   			
-		   			$('#botones').show();
-		   			$('#escondido').hide();
-		   			$('#buscarProductosBodegas').modal('toggle');
-		   			$('#contenedorProductosBodegas').empty();
-				  
-			   }else{
-				   var resultado;
-				   if($(this).val()==''){
-					   resultado = parseFloat(0).toFixed(2);
-					   $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(8).children().val(resultado);
-					   
-					   subTotal = parseFloat(subTotal+resultado).toFixed(2);
-					   $('#subTotal').text('Subtotal: ' + subTotal);
-					   $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(6).children().focus();
-					   
-				   }else{
-					   
-					   resultado = parseFloat($('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(3).children().val()*
-				   				$('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(5).children().children().eq(1).val()
-					   ).toFixed(2);
-					   
-					   $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(8).children().val(resultado);
-					   $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(6).children().focus();
-					   
-				   }
-				   
-			   }
-		   }
-		   
-	   });
 	   $('#siBodegas').click(function(){
 		   $('#botones').hide();
 		   $('#escondido').show();
@@ -154,7 +106,7 @@
 				     return(value);
 				  }, {
 				     onblur  : 'submit',
-				     event   : 'click',
+				     event   : 'dblclick',
 				     style   : 'inherit',
 				     callback : function(value, settings) {
 				    	 traerProducto(value, separarTexto(0, $('#fPago').val()), $('#codigoLista').text() ,$(this).parent().index());
@@ -168,14 +120,23 @@
 			     return(value);
 			  }, {
 			     onblur  : 'submit',
-			     event   : 'click',
+			     event   : 'dblclick',
 			     style   : 'inherit',
 			     callback : function(value, settings) {
 			    	 ejecutarCantidad(value, $(this).parent().index());
 			     }
 			  });
 	   });
-	   
+//	   $(document).on('click', '.descripcion', function (){
+//		   $('.descripcion').popover({
+//			   	trigger: 'hover',
+//		        placement: 'top',
+//		        content: function() {
+//		           var message = $(this).text();
+//		             return message;
+//		        }
+//		    });
+//	   });
 	   $('#codigoProduct').keydown(function (e){
 
 	   		alert('presionado');
@@ -307,13 +268,14 @@
 		   $('#buscarPagos').modal('toggle');
 	   });
 	   //seleccionar producto
-	   $jq("table[id$='tablaProductos'] td:nth-child(1)").live('click',function(event) {  
+	   $jq("table[id$='tablaProductos'] td").live('click',function(event) {  
 			//Para evitar que el link actue.  
 		   event.preventDefault();  
 		   var $td= $(this).closest('tr').children('td');
-		   $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(0).children().val($td.eq(0).text());
+		   traerProducto($td.eq(0).text(), separarTexto(0, $('#fPago').val()), $('#codigoLista').text() ,$('#indice').text());
+		   
 		   $('#buscarProductos').modal('toggle');
-		   $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(0).children().focus();
+		   
 		   
 	   });
 	   
@@ -403,79 +365,182 @@
             cargarDatosNit($td.eq(0).text());
 	   });
         
-        
+        $jq("table[id$='tablaCotizaciones'] td").live('click',function(event) {
+            event.preventDefault(); 
+            var $td= $(this).closest('tr').children('td');
+            $('#buscarDocumentos').modal('toggle');
+            cargarEncabezado(1, '', $.trim($td.eq(0).text()));
+	   });
 	   //grabar el Documento
 	   $('#grabarDocumento').click(function(){
 		   var numFilas = $('#datosVarios >tbody >tr').length;
-		   $('#numFilas').text(numFilas);
-		   $.post('IngresarEnc',{
-			   codigoCliente : $('#codigoCliente').text(), nit : $('#nit').val(), nombreCliente : $('#nombre').val(),
-			   direcFactura : $('#direcF').val(), tel : $('#telefono').val(), tarjeta : $('#tarjeta').val(),
-			   direcEnvio : $('#direcE').val(), tipoDoc : separarTexto(0, $('#tDoc').val()), fechaVence : $('#fecha').text(),
-			   tipoPago : separarTexto(0, $('#fPago').val()), tipoCredito : $('#tCredito').val(), autoriza : "S",
-			   fechaDoc : $('#fecha').text(), cargosEnvio : 0, otrosCargos: 0,
-			   montoVenta: separarTexto(1, $('#subTotal').text()), montoTotal : separarTexto(1, $('#total').text()), tipoNota : 0,
-			   caja : 0 , fechaEntrega : $('#fecha').text(), noConsigna : 0 , codMovDev : 0,
-			   generaSolicitud : 'N', tipoPagoNC : 0 , tipoCliente : $('#tipoCliente').text(),
-			   codigoNegocio : "", cantidadDevolver : 0, autorizoDespacho : "", 
-			   saldo : $('#saldoCliente').text()
-		   } ,function(responseText) {
-			   if(responseText!=null){
-				   $('#numDocumento').text(responseText);
-			   }
-					   
-		   });
-		   $('#datosVarios tbody tr').each(function (index){
-			   var bod, kit;
-			   codigoP = $('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text();
-			   descripcion = $('#datosVarios > tbody > tr').eq(index).find('.descripcion').text();
-			   medida = $('#datosVarios > tbody > tr').eq(index).find('.medida').text();
-			   cantidad = $('#datosVarios > tbody > tr').eq(index).find('.cantidad').text();
-			   disponible = $('#datosVarios > tbody > tr').eq(index).find('.disponible').text();
-			   precioU = $('#datosVarios > tbody > tr').eq(index).find('.precio').text();
-			   if($('#datosVarios > tbody > tr').eq(index).find('.porcentaje').text()==''){
-				   porDesc = 0.00;
-			   }else{
-
-				   porDesc = $('#datosVarios > tbody > tr').eq(index).find('.porcentaje').text();
-			   }
-			   descuento = $('#datosVarios > tbody > tr').eq(index).find('.descuento').text();
-			   importe = $('#datosVarios > tbody > tr').eq(index).find('.importe').text();
-			   bod = $('#datosVarios > tbody > tr').eq(index).find('.bodega').text();
-			   if($('#datosVarios > tbody > tr').eq(index).find('.envio').children().prop('checked')){
-				   envio = 1;
-			   }else{
-				   envio = 0;
-			   }
-			   dm = $('#datosVarios > tbody > tr').eq(index).find('.dm').text();
-			   observ = $('#datosVarios > tbody > tr').eq(index).find('.obser').text();
-			   kit = $('#datosVarios > tbody > tr').eq(index).find('.kit').text();
-			   
-			   $.post('IngresarDet',{
-				   tipoDocumento : separarTexto(0, $('#tDoc').val()), serieDocumento : '', numeroDocumento : $('#numDocumento').text(), numCorrelativo : 1, codigoProducto : codigoP,
-				   UMedida : medida, cantidad: cantidad, precio : precioU, porDescuento : porDesc, descuento : descuento, total: importe, codigoCliente : $('#codigoCliente').text(),
-				   promo : 0, bodega : bod, envio : envio, observaciones : observ, lista : $('#codigoLista').text(), pago : separarTexto(0, $('#fPago').val()), kit : kit, corrKit : 0, codPromo : 0,
-				   serieDevProy : '', numDevProy : '0', ordenCompra : 0
-				   
-				   
+		   
+			   $('#numFilas').text(numFilas);
+			   $.post('IngresarEnc',{
+				   codigoCliente : $('#codigoCliente').text(), nit : $('#nit').val(), nombreCliente : $('#nombre').val(),
+				   direcFactura : $('#direcF').val(), tel : $('#telefono').val(), tarjeta : $('#tarjeta').val(),
+				   direcEnvio : $('#direcE').val(), tipoDoc : separarTexto(0, $('#tDoc').val()), fechaVence : $('#fecha').text(),
+				   tipoPago : separarTexto(0, $('#fPago').val()), tipoCredito : $('#tCredito').val(), autoriza : "S",
+				   fechaDoc : $('#fecha').text(), cargosEnvio : 0, otrosCargos: 0,
+				   montoVenta: separarTexto(1, $('#subTotal').text()), montoTotal : separarTexto(1, $('#total').text()), tipoNota : 0,
+				   caja : 0 , fechaEntrega : $('#fecha').text(), noConsigna : 0 , codMovDev : 0,
+				   generaSolicitud : 'N', tipoPagoNC : 0 , tipoCliente : $('#tipoCliente').text(),
+				   codigoNegocio : "", cantidadDevolver : 0, autorizoDespacho : "", 
+				   saldo : $('#saldoCliente').text()
 			   } ,function(responseText) {
 				   if(responseText!=null){
-					   alert('documento grabado con numero: ' + $('#numDocumento').text());
+					   var numDocumento;
+					   numDocumento = $.trim(responseText);
+					   $('#numDocumento').text(numDocumento);
+					   guardarDetalle(numDocumento);
+					   console.log('Documento Creado ' +  numDocumento);
 				   }
-						   
+//				   guardarDetalle(numDocumento);	   
 			   });
-		   });
+		   
+		   
+//		   guardarDetalle(57043);
 		   
 //		   
 	   });
 	   
    });/**fin de document.ready*/
+    function cargarDetalle(tipoDoc, serie, numDocumento){
+    	$.post('CargarDetalle',{tipoDoc : tipoDoc, serie : serie, numDocumento : numDocumento} ,function(responseJson) {
+    		var fila;
+	 		   if(responseJson!=null){
+	 			  $('#datosVarios tbody').empty();
+	 			  fila = 0;
+	 			   $.each(responseJson, function(key, value) {
+	 				  
+	 				  var rowNew = $('<tr>' +
+	 		            		'<td class="codigoProducto"></td>'+
+	 		            		'<td class="medida"></td>'+
+	 		            		'<td class="descripcion"><div class="contenDescrip"></div></td>'+
+	 		            		'<td class="cantidad"></td>'+
+	 		            		'<td class="disponible"></td>'+
+	 		            		'<td class="precio"></td>'+
+	 		            		'<td class="porcentaje"></td>'+
+	 			   				'<td class="descuento" ></td>'+
+	 		            		'<td class="importe"></td>'+
+	 		            		'<td class="bodega"></td>'+
+	 		            		'<td class="envio"><input type="checkbox"></td>'+
+	 		            		'<td class="dm" ></td>'+
+	 		            		'<td class="obser"></td>'+
+	 		            		'<td class="kit"></td>'+
+	 		            	'</tr>');
+	 				  	rowNew.appendTo($('table#datosVarios tbody'));
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.codigoProducto').text(value['codigoProducto']);
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.medida').text(value['uMedida']);
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.descripcion').children().text(value['descripcion']);
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.cantidad').text(parseInt(value['cantidad']));
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.precio').text($.trim(parseFloat(value['precio']).toFixed(2)));
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.disponible').text(parseInt(value['disponible']));
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.porcentaje').text(parseFloat(value['porDescuento']).toFixed(2));
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.descuento').text($.trim(parseFloat(value['descuento']).toFixed(2)));
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.bodega').text(value['bodega']);
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.importe').text($.trim(parseFloat(value['total']).toFixed(2)));
+	 				  	console.log(value['envia']);
+	 				  	if(value['envia']=='1'){
+	 				  		$('#datosVarios > tbody > tr').eq(fila).find('.envio').children().eq(0).prop('checked', true);
+	 				  	}else if(value['envia']=='0'){
+	 				  		$('#datosVarios > tbody > tr').eq(fila).find('.envio').children().eq(0).prop('checked', false);
+	 				  	}
+	 				  	
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.obser').text(value['observaciones']);
+	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.kit').text(value['kit']);
+		               console.log($('#datosVarios > tbody > tr').eq(fila).find('.kit').text());
+	 				  	fila += 1;
+		               
+	 			    });
+	 			  $('.kit').hide();
+	 		   }
+	 				   
+	 	   });
+    	
+    }
+    function cargarEncabezado(tipoDoc, serie, numDocumento){
+    	$.post('CargarEncabezado',{tipoDoc : tipoDoc, serie : serie, numDocumento : numDocumento} ,function(responseJson) {
+ 		 		   if(responseJson!=null){
+ 		 			   $.each(responseJson, function(key, value) {
+ 						   $('#fPago').val($.trim(value['tipoPago']));
+ 						   $('#tCredito').val($.trim(value['tipoCredito']));
+ 						   $('#tDoc').val(value['tipoDocumento']);
+ 						   $('#nDoc').val(numDocumento);
+ 						   $('#fechaVencimiento').val(componerFecha(value['fechaVence']));
+ 						   $('#nit').val(value['nit']);
+ 						   console.log(value['nit']);
+ 						   $('#direcF').val(value['direcFactura']);
+ 						   $('#nombre').val(value['nombreCliente']);
+ 						   $('#codigoCliente').text(value['codigoCliente']);
+ 						   $('#autoriza').text(value['autoriza']);
+ 						   $('#subTotal').text('SubTotal: ' + $.trim(parseFloat(value['montoVenta']).toFixed(2)));
+ 						   $('#total').text('Total: ' + $.trim(parseFloat(value['montoTotal']).toFixed(2)));
+ 		 			    });
+ 		 			   
+ 		 			   cargarDatosNit($('#nit').val());
+ 		 			 cargarDetalle(1,'',$('#nDoc').val());
+ 		 		   }
+ 		 				   
+ 		 	   });
+    }
+    function guardarDetalle(numeroDocumento){
+    	console.log('Documento pasado: ' + numeroDocumento);
+    	 $('#datosVarios tbody tr').each(function (index){
+	    		var codigoP,descripcion,medida,cantidad,disponible,precioU, porDesc, descuento, importe, dm, observ,envio
+				   var bod, kit;
+				   codigoP = $('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text();
+				   console.log('Producto a guardar: ' +codigoP);
+				   descripcion = $('#datosVarios > tbody > tr').eq(index).find('.descripcion').text();
+				   medida = $('#datosVarios > tbody > tr').eq(index).find('.medida').text();
+				   cantidad = $('#datosVarios > tbody > tr').eq(index).find('.cantidad').text();
+				   disponible = $('#datosVarios > tbody > tr').eq(index).find('.disponible').text();
+				   precioU = $('#datosVarios > tbody > tr').eq(index).find('.precio').text();
+				   if($('#datosVarios > tbody > tr').eq(index).find('.porcentaje').text()==''){
+					   porDesc = 0.00;
+				   }else{
+
+					   porDesc = $('#datosVarios > tbody > tr').eq(index).find('.porcentaje').text();
+				   }
+				   descuento = $('#datosVarios > tbody > tr').eq(index).find('.descuento').text();
+				   importe = $('#datosVarios > tbody > tr').eq(index).find('.importe').text();
+				   bod = $('#datosVarios > tbody > tr').eq(index).find('.bodega').text();
+				   if($('#datosVarios > tbody > tr').eq(index).find('.envio').children().prop('checked')){
+					   envio = 1;
+				   }else{
+					   envio = 0;
+				   }
+				   dm = $('#datosVarios > tbody > tr').eq(index).find('.dm').text();
+				   observ = $('#datosVarios > tbody > tr').eq(index).find('.obser').text();
+				   kit = $('#datosVarios > tbody > tr').eq(index).find('.kit').text();
+				   
+				   $.post('IngresarDet',{
+					   tipoDocumento : separarTexto(0, $('#tDoc').val()), serieDocumento : '', numeroDocumento : numeroDocumento, numCorrelativo : 1, codigoProducto : codigoP,
+					   UMedida : medida, cantidad: $('#datosVarios > tbody > tr').eq(index).find('.cantidad').text(), precio : precioU, porDescuento : porDesc, descuento : descuento, total: importe, codigoCliente : $('#codigoCliente').text(),
+					   promo : 0, bodega : bod, envio : envio, observaciones : observ, lista : $('#codigoLista').text(), pago : separarTexto(0, $('#fPago').val()), kit : kit, corrKit : 0, codPromo : 0,
+					   serieDevProy : '', numDevProy : '0', ordenCompra : 0
+					   
+					   
+				   } ,function(responseText) {
+					   return false;
+					   if(responseText!=null){
+//						   alert(responseText);
+						   console.log(responseText);
+						   return true;
+//						   alert('Producto grabado en documento numero: ' + $('#numDocumento').text());
+					   }
+							   
+				   });
+			   });
+    	
+    }
    function traerProducto(codigoProducto, tipoPago, lista, indiceFila){
+	   $('#indice').text(indiceFila);
 	    console.log(codigoProducto + ' ' + tipoPago + ' ' + lista + ' ' + indiceFila);
         $.post('TraerProducto',{codigo : codigoProducto, lista : lista, formaPago : tipoPago} ,function(responseJson){
 		 		   if(responseJson!=null){
 		 			   $.each(responseJson, function(key, value) {
-		 				   $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text(value['codigoProducto']);
+		 				   $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text($.trim(value['codigoProducto']));
 		 				   $('#datosVarios > tbody > tr').eq(indiceFila).find('.medida').text(value['medida']);
 		 				   $('#datosVarios > tbody > tr').eq(indiceFila).find('.descripcion').children().text(value['descripcionProducto']);
 		 				   $('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').text(parseInt(0));
@@ -583,7 +648,6 @@
 					$('#tipoCliente').text(value['tipoCliente']);
 					$('#saldoCliente').text(value['saldo']);
 			    });
-			   fechaEntrega();
 		   }
 				   
 	   });
@@ -620,7 +684,7 @@
 	   $.post('TraeDatos',{opcion : opcion , codigo : noDoc} ,function(responseJson) {
 		   if(responseJson!=null){
 			   $.each(responseJson, function(key, value) {
-					$('#fechaVencimiento').val(separarTexto(0,value['fechaVencimiento']));
+					$('#fechaVencimiento').val(componerFecha(value['fechaVencimiento']));
 			    });
 		   }
 				   
@@ -661,6 +725,15 @@
 	   var particiones = cadena.split(' ');
 	    
 	   return particiones[posicion];
+   }
+   function componerFecha(fecha){
+	   var cadena = fecha;
+	   var particiones = cadena.split('-');
+	   var nuevaFecha;
+	   cadena = particiones[2];
+	   var particiones2 = cadena.split(' ');
+	   nuevaFecha = particiones2[0] + '/' + particiones[1] + '/' + particiones[0];
+	   return nuevaFecha;
    }
    function obtenerCodigo(codigo){
 	   var codigoProducto = codigo;
@@ -734,7 +807,11 @@
 		               rowNew.children().eq(4).text(parseInt(value['disponible']));
 		               rowNew.children().eq(5).text(value['bodegaProducto']);
 		               rowNew.children().eq(6).text(parseInt(value['backOrder']));
-		               rowNew.children().eq(7).text(value['fechaespera']);
+//		               if(typeof value['fechaespera'] == 'undefined'){
+//		            	   rowNew.children().eq(7).text('N/A');
+//		               }else{
+		            	   rowNew.children().eq(7).text(value['fechaespera']);
+//		               }
 		               rowNew.children().eq(8).text(value['transito']);
 		               rowNew.children().eq(9).text(value['familiaProducto']);
 		               rowNew.children().eq(10).text(value['referenciaProducto']);
@@ -950,5 +1027,4 @@
     	alert(valor);
     	return valor;
     }
-   function cargarEncabezado(){}
   }(window.jQuery, window, document));

@@ -33,41 +33,58 @@ public class ImplementaDatosDet implements InterfazDatosDet{
 			
 			con = new ConectarDB().getConnection();
 			stmt = con.prepareCall("{call stp_UDPV_InUp_Mov_Det(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
-			stmt.setString(1, datos.getTipoDoc());
+			stmt.setInt(1, Integer.parseInt(datos.getTipoDoc()));
 			stmt.setString(2, datos.getSerieDoc());
+			System.out.println(datos.getNoDoc());
 			stmt.setString(3, datos.getNoDoc());
-			stmt.setString(4, datos.getCorrelativo());
+			stmt.setInt(4, Integer.parseInt(datos.getCorrelativo()));
 			stmt.setString(5, datos.getCodigoProducto());
 			stmt.setString(6, unidad);
-			stmt.setString(7, datos.getCantidad());
+			stmt.setInt(7, Integer.parseInt(datos.getCantidad()));
 			stmt.setString(8, datos.getPrecio());
 			stmt.setString(9, datos.getPorDescuento());
 			stmt.setString(10, datos.getDescuento());
 			stmt.setString(11, datos.getTotal());
-			stmt.setString(12, datos.getCodigoCliente());
-			stmt.setString(13, datos.getPromo());
+			stmt.setInt(12, Integer.parseInt(datos.getCodigoCliente()));
+			stmt.setInt(13, Integer.parseInt(datos.getPromo()));
 			stmt.setString(14, datos.getBodega());
-			stmt.setString(15, datos.getEnvia());
+			stmt.setInt(15, Integer.parseInt(datos.getEnvia()));
 			stmt.setString(16, datos.getObservaciones());
-			stmt.setString(17, datos.getLista());
-			stmt.setString(18, datos.getPago());
+			stmt.setInt(17, Integer.parseInt(datos.getLista()));
+			stmt.setInt(18, Integer.parseInt(datos.getPago()));
 			stmt.setString(19, datos.getKit());
-			stmt.setString(20, datos.getCorrKit());
-			stmt.setString(21, datos.getCodPromo());
+			stmt.setInt(20, Integer.parseInt(datos.getCorrKit()));
+			stmt.setInt(21, Integer.parseInt(datos.getCodPromo()));
 			stmt.setString(22, datos.getSerieDevProy());
 			stmt.setString(23, datos.getNumeroDevProy());
-			stmt.setString(24, datos.getOrdenCompra());
+			stmt.setInt(24, Integer.parseInt(datos.getOrdenCompra()));
 			
 			rs = stmt.executeQuery();
 			
 			while(rs.next()){
+				datos.setMensaje("Detalle de producto guardado " + datos.getCodigoProducto());
 				System.out.println("Detalle de producto guardado " + datos.getCodigoProducto());
 			}
 			con.close();
 			stmt.close();
 			rs.close();
+			
+//			con = new ConectarDB().getConnection();
+//			stmt = con.prepareCall("{call stp_udpv_VerificaCotiza(?,?)}");
+//			stmt.setString(1, "");
+//			stmt.setString(2, datos.getNoDoc());
+//			rs = stmt.executeQuery();
+//			
+//			while(rs.next()){
+//				System.out.println("Det " + rs.getString("error"));
+//			}
+//			con.close();
+//			stmt.close();
+//			rs.close();
+			
 		}catch(SQLException e ){
-			datos.setMensaje("Error: " + e.getMessage());
+			e.printStackTrace();
+			datos.setMensaje("Error Det: " + e.getMessage());
 		}
 		return datos;
 	}

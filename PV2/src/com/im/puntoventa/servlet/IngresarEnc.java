@@ -37,13 +37,21 @@ public class IngresarEnc extends HttpServlet {
 		
 		datos = new DatosEnc();
 		datos.setCodigoCliente(request.getParameter("codigoCliente"));
+		System.out.println(datos.getCodigoCliente());
 		datos.setNit(request.getParameter("nit"));
+		System.out.println(datos.getNit());
 		datos.setNombreCliente(request.getParameter("nombreCliente"));
+		System.out.println(datos.getNombreCliente());
 		datos.setDirecFactura(request.getParameter("direcFactura"));
+		System.out.println(datos.getDirecFactura());
 		datos.setTel(request.getParameter("tel"));
+		System.out.println(datos.getTel());
 		datos.setTarjeta(request.getParameter("tarjeta"));
+		System.out.println(datos.getTarjeta());
 		datos.setDirecEnvio(request.getParameter("direcEnvio"));
+		System.out.println(datos.getDirecEnvio());
 		datos.setCodigoVendedor((String) request.getSession().getAttribute("codigoVendedor"));
+		System.out.println(datos.getCodigoVendedor());
 		datos.setUsername((String) request.getSession().getAttribute("usuario"));
 		datos.setTipoDocumento(request.getParameter("tipoDoc"));
 		datos.setFechaVence(request.getParameter("fechaVence"));
@@ -52,9 +60,13 @@ public class IngresarEnc extends HttpServlet {
 		datos.setAutoriza(request.getParameter("autoriza"));
 		datos.setFechaDocumento(request.getParameter("fechaEntrega"));
 		datos.setCargosEnvio(request.getParameter("cargosEnvio"));
+		System.out.println(datos.getCargosEnvio());
 		datos.setOtrosCargos(request.getParameter("otrosCargos"));
+		System.out.println(datos.getOtrosCargos());
 		datos.setMontoVenta(request.getParameter("montoVenta"));
+		System.out.println(datos.getMontoVenta());
 		datos.setMontoTotal(request.getParameter("montoTotal"));
+		System.out.println(datos.getMontoTotal());
 		datos.setObservaciones(request.getParameter("observaciones"));
 		datos.setTipoNota(request.getParameter("tipoNota"));
 		datos.setCaja(request.getParameter("caja"));

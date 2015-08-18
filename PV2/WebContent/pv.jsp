@@ -101,6 +101,7 @@
                     			<label id="mensaje"></label>
                     			<label id="codigoLista">1</label>
                     			<label id="fechaPrueba"></label>
+                    			<label id="autoriza"></label>
                     		</div>
                     	<div class="table-responsive" id="contenedorDatosVarios">
                     		
@@ -128,7 +129,7 @@
 	                    </thead>
 	                    <tbody>
 	                    	<tr>
-	                    		<td class="codigoProducto">--</td>
+	                    		<td class="codigoProducto">cod. prod.</td>
 	                    		<td class="medida"></td>
 	                    		<td class="descripcion"><div class="contenDescrip"></div></td>
 	                    		<td class="cantidad"></td>
@@ -221,7 +222,7 @@
                         </div>
                         <div class="col-sm-2 col-md-2">
                             <h6>Fecha Entrega</h6>
-                            <input type="text" class="form-control input-sm" id="fechaEntrega" disabled>
+                            <input type="text" class="form-control input-sm" id="fechaEntrega">
                         </div>
                         <div class="col-sm-6 col-md-6">
                             <h6>Dirección Envío</h6>
@@ -463,6 +464,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/jeditable.min.js"></script>
+	<script src="js/maskedinput.min.js"></script>
 	<script src="js/script.js"></script>
 	<script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
 	<script src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>

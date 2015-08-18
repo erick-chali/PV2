@@ -4,8 +4,24 @@ public class DatosEnc {
 
 	public DatosEnc(){}
 	
-	public DatosEnc(String noDocumento){
+	public DatosEnc(String codigoCliente, String nit, String nombreCliente, String direcFactura, String tipoDocumento,
+			String noDocumento, String fechaVence, String tipoPago, String tipoCredito, String autoriza,
+			String montoVenta, String montoTotal, String observaciones, String autorizoDespacho) {
+		this.setCodigoCliente(codigoCliente);
+		this.setNit(nit);
+		this.setNombreCliente(nombreCliente);
+		this.setDirecFactura(direcFactura);
+		this.setTipoDocumento(tipoDocumento);
 		this.setNoDocumento(noDocumento);
+		this.setFechaVence(fechaVence);
+		this.setTipoPago(tipoPago);
+		this.setTipoCredito(tipoCredito);
+		this.setAutoriza(autoriza);
+		this.setMontoVenta(montoVenta);
+		this.setMontoTotal(montoTotal);
+		this.setObservaciones(observaciones);
+		this.setAutorizoDespacho(autorizoDespacho);
+		
 	}
 	
 	private String codigoCliente;

@@ -39,7 +39,7 @@ body {
 }
 #contenedorDatosVarios{
 	height: 300px;
-	overflow: scroll;
+	overflow-x: auto;
 }
 .contenDescrip{
    /* Styles goes here */

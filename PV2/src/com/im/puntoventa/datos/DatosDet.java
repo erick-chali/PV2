@@ -1,17 +1,41 @@
 package com.im.puntoventa.datos;
 
 public class DatosDet {
-	
 	public DatosDet(){}
 	
 	
+	
+	public DatosDet(String correlativo, String codigoProducto, String uMedida, String descripcion, String cantidad,
+			String disponible, String precio, String porDescuento, String descuento, String total, String promo,
+			String bodega, String envia, String observaciones, String kit) {
+		this.setCorrelativo(correlativo);
+		this.setCodigoProducto(codigoProducto);
+		this.setuMedida(uMedida);
+		this.setDescripcion(descripcion);
+		this.setCantidad(cantidad);
+		this.setPrecio(precio);
+		this.setDisponible(disponible);
+		this.setPorDescuento(porDescuento);
+		this.setDescuento(descuento);
+		this.setTotal(total);
+		this.setPromo(promo);
+		this.setBodega(bodega);
+		this.setEnvia(envia);
+		this.setObservaciones(observaciones);
+		this.setKit(kit);
+	}
+
+
+
 	private String tipoDoc;
 	private String serieDoc;
 	private String noDoc;
 	private String correlativo;
 	private String codigoProducto;
 	private String uMedida;
+	private String descripcion;
 	private String cantidad;
+	private String disponible;
 	private String precio;
 	private String porDescuento;
 	private String descuento;
@@ -31,6 +55,19 @@ public class DatosDet {
 	private String ordenCompra;
 	private String mensaje;
 	
+	
+	public String getDisponible() {
+		return disponible;
+	}
+	public void setDisponible(String disponible) {
+		this.disponible = disponible;
+	}
+	public String getDescripcion() {
+		return descripcion;
+	}
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
 	public String getMensaje() {
 		return mensaje;
 	}
