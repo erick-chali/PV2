@@ -2,6 +2,17 @@
 	  
     
     $(function () {
+    	var device = navigator.userAgent
+
+    	if (device.match(/Iphone/i)|| device.match(/Ipod/i)|| device.match(/Android/i)|| device.match(/J2ME/i)|| device.match(/BlackBerry/i)|| device.match(/iPhone|iPad|iPod/i)|| device.match(/Opera Mini/i)|| device.match(/IEMobile/i)|| device.match(/Mobile/i)|| device.match(/Windows Phone/i)|| device.match(/windows mobile/i)|| device.match(/windows ce/i)|| device.match(/webOS/i)|| device.match(/palm/i)|| device.match(/bada/i)|| device.match(/series60/i)|| device.match(/nokia/i)|| device.match(/symbian/i)|| device.match(/HTC/i))
+    	{
+    	window.location = "movil.pv.jsp";
+
+    	}
+    	else
+    	{
+    		console.log('Dispositivo Normal');
+    	}
 	   var codigoP, descripcion, medida, cantidad, disponible, precioU, porDesc, descuento, importe, envio, dm, observ;
 	   var subTotal = 0;
 	   var Total;
@@ -40,18 +51,24 @@
 	   $('#nit').focus();
 	   $('#tDoc').keydown(function(e){
 		   if(e.keyCode==13){
-			   if($(this).val()==3 || $(this).val()==1){
-				   $('#autorizar').modal('toggle');
-			   }else if($(this).val()==2){
-				   cargarDatosDoc(1,$(this).val());
-			   }
-			   
+			   cargarDatosDoc(1,$(this).val());
 		   }
+		   
+//		   if(e.keyCode==13){
+//			   if($(this).val()==3 || $(this).val()==1){
+//				   $('#autorizar').modal('toggle');
+//			   }else if($(this).val()==2){
+//				   cargarDatosDoc(1,$(this).val());
+//			   }
+//			   
+//		   }
 	   });
 	   $('#fPago').keydown(function(e){
 		   if(e.keyCode==13){
 			   cargarDatosPago(3,$(this).val(),$('#lCredito').val());
+			   
 		   }
+		   
 	   });
 	   
 	   $('#nit').keydown(function(e){
@@ -101,32 +118,55 @@
 	   			$('#indice').text($(this).parent().index());
 		   }else{
 			   $('#indice').text($(this).parent().index());
+			   console.log($('#indice').text());
 			   $('#divFormaPago').removeClass('has-error');
 			   $('.codigoProducto').editable(function(value, settings) {
 				     return(value);
 				  }, {
-				     onblur  : 'submit',
+				     onblur  : 'cancel',
 				     event   : 'dblclick',
 				     style   : 'inherit',
 				     callback : function(value, settings) {
-				    	 traerProducto(value, separarTexto(0, $('#fPago').val()), $('#codigoLista').text() ,$(this).parent().index());
+				    	 traerProducto(value, separarTexto(0, $('#fPago').val()), $('#codigoLista').text() ,$('#indice').text());
+				    	 console.log($(this).parent().index());
 				     }
 				  });
 		   }
 	   });
 	   $(document).on('click', '.cantidad', function (){
-//		   $('#indice').text($(this).parent().index());
+		   $('#indice').text($(this).parent().index());
+		   var indice;
+		   indice = $(this).parent().index();
 		   $('.cantidad').editable(function(value, settings) {
 			     return(value);
 			  }, {
-			     onblur  : 'submit',
+			     onblur  : 'cancel',
 			     event   : 'dblclick',
 			     style   : 'inherit',
 			     callback : function(value, settings) {
-			    	 ejecutarCantidad(value, $(this).parent().index());
+			    	 
+			    	 ejecutarCantidad(value, indice);
 			     }
 			  });
 	   });
+//	   $(document).on('keydown', '.codigoProducto', function(e){
+//		   if(e.keyCode==9){
+//			   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').blur();
+//			   $('.cantidad').editable(function(value, settings) {
+//				     return(value);
+//				  }, {
+//				     onblur  : 'cancel',
+//				     event   : 'dblclick',
+//				     style   : 'inherit',
+//				     callback : function(value, settings) {
+//				    	 
+//				    	 ejecutarCantidad(value, $('#indice').text());
+//				     }
+//				  });
+//			   console.log('teclas presionadas');
+//	 			$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.cantidad').trigger('dblclick');
+//		   }
+//	   });
 //	   $(document).on('click', '.descripcion', function (){
 //		   $('.descripcion').popover({
 //			   	trigger: 'hover',
@@ -220,27 +260,10 @@
 	   });
 	   
 	   $('#agregarFila').click(function (e){
-		   	 var filaNueva = $(
-		   			'<tr>' +
-	            		'<td class="codigoProducto"></td>'+
-	            		'<td class="medida"></td>'+
-	            		'<td class="descripcion"><div class="contenDescrip"></div></td>'+
-	            		'<td class="cantidad"></td>'+
-	            		'<td class="disponible"></td>'+
-	            		'<td class="precio"></td>'+
-	            		'<td class="porcentaje"></td>'+
-		   				'<td class="descuento" ></td>'+
-	            		'<td class="importe"></td>'+
-	            		'<td class="bodega"></td>'+
-	            		'<td class="envio"><input type="checkbox"></td>'+
-	            		'<td class="dm" ></td>'+
-	            		'<td class="obser"></td>'+
-	            		'<td class="kit"></td>'+
-            		'</tr>'
-		   	 );
-		   	 
-		   	 filaNueva.prependTo(('#datosVarios > tbody'));
-		   	 $('.kit').hide();
+//		   $('#datosVarios tbody tr').each(function (index){
+//			   $('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text();
+//		   });
+		   	 agregarFila();
            });
 	   
 	   $('#f3').click(function (e){
@@ -394,11 +417,11 @@
 					   $('#numDocumento').text(numDocumento);
 					   guardarDetalle(numDocumento);
 					   console.log('Documento Creado ' +  numDocumento);
-				   }
-//				   guardarDetalle(numDocumento);	   
+				   }   
 			   });
 		   
-		   
+
+//			   guardarDetalle(57074);
 //		   guardarDetalle(57043);
 		   
 //		   
@@ -535,8 +558,9 @@
     	
     }
    function traerProducto(codigoProducto, tipoPago, lista, indiceFila){
+	   console.log(indiceFila);
 	   $('#indice').text(indiceFila);
-	    console.log(codigoProducto + ' ' + tipoPago + ' ' + lista + ' ' + indiceFila);
+	    
         $.post('TraerProducto',{codigo : codigoProducto, lista : lista, formaPago : tipoPago} ,function(responseJson){
 		 		   if(responseJson!=null){
 		 			   $.each(responseJson, function(key, value) {
@@ -562,11 +586,27 @@
 		 				   }
 		 			    });
 		 			  sumarColumnaImporte();
+		 			 $('.cantidad').editable(function(value, settings) {
+		 				 $('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').text('');
+		 				 console.log(value);
+					     return(value);
+					  }, {
+					     onblur  : 'cancel',
+					     event   : 'dblclick',
+					     style   : 'inherit',
+					     callback : function(value, settings) {
+					    	 
+					    	 ejecutarCantidad(value, indiceFila);
+					     }
+					  });
+		 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').trigger('dblclick');
 		 		   }
 		 				   
 		 	   });
    }
    function ejecutarCantidad(cantidad, indiceFila){
+	   console.log('indice Fila en cantidad: ' + indiceFila);
+	   revisarCantidadMismoProducto($('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text(), cantidad, indiceFila);
 	   $('#indice').text(indiceFila);
 	   var importe;
 	   var cantDisp;
@@ -672,8 +712,19 @@
 			   $.each(responseJson, function(key, value) { 
 					$('#fPago').val(value['codigoPago'] + ' ' + value['descripcionPago']);
 					$('#tCredito').val(value['esCredito']);
+					
+					$('.codigoProducto').editable(function(value, settings) {
+					     return(value);
+					  }, {
+					     onblur  : 'cancel',
+					     event   : 'dblclick',
+					     style   : 'inherit',
+					     callback : function(value, settings) {
+					    	 traerProducto(value, separarTexto(0, $('#fPago').val()), $('#codigoLista').text() ,$('#indice').text());
+					     }
+					  });
+					$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').trigger('dblclick');
 			    });
-			   $('#codigoProducto').focus();
 		   }
 				   
 	   });
@@ -1027,4 +1078,37 @@
     	alert(valor);
     	return valor;
     }
+    function revisarCantidadMismoProducto(codigoProducto, cantidad, indiceActual){
+    	$('#datosVarios tbody tr').each(function (index){
+    		if($('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text() == codigoProducto && index!=0 && index != indiceActual){
+    			console.log('Encontro el producto en linea: ' + index);
+    		}
+    		
+    		
+		});
+    }
+    function agregarFila(){
+    	var filaNueva = $(
+	   			'<tr>' +
+            		'<td class="codigoProducto"></td>'+
+            		'<td class="medida"></td>'+
+            		'<td class="descripcion"><div class="contenDescrip"></div></td>'+
+            		'<td class="cantidad"></td>'+
+            		'<td class="disponible"></td>'+
+            		'<td class="precio"></td>'+
+            		'<td class="porcentaje"></td>'+
+	   				'<td class="descuento" ></td>'+
+            		'<td class="importe"></td>'+
+            		'<td class="bodega"></td>'+
+            		'<td class="envio"><input type="checkbox"></td>'+
+            		'<td class="dm" ></td>'+
+            		'<td class="obser"></td>'+
+            		'<td class="kit"></td>'+
+        		'</tr>'
+	   	 );
+	   	 
+	   	 filaNueva.prependTo(('#datosVarios > tbody'));
+	   	 $('.kit').hide();
+    }
+    
   }(window.jQuery, window, document));

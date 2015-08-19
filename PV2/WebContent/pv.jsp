@@ -91,7 +91,7 @@
                     			<button type="button" id="agregarFila" class="btn btn-primary btn-sm" style="margin-bottom: 10px;">
                     			<span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
                     			</button>
-                    			<label id="indice"></label>
+                    			<label id="indice">0</label>
                     			<label id="codigoCliente"></label>
                     			<label id="codigoProd"></label>
                     			<label id="numFilas"></label>
@@ -129,7 +129,7 @@
 	                    </thead>
 	                    <tbody>
 	                    	<tr>
-	                    		<td class="codigoProducto">cod. prod.</td>
+	                    		<td class="codigoProducto"></td>
 	                    		<td class="medida"></td>
 	                    		<td class="descripcion"><div class="contenDescrip"></div></td>
 	                    		<td class="cantidad"></td>
@@ -200,7 +200,7 @@
                         <div class="col-sm-3 col-md-3">
 <!--                            <label for="nombre">Nombre Cliente</label>-->
                             <h6>Nombre Cliente</h6>
-                            <input type="text" class="form-control input-sm" id="nombre" placeholder="Nombre Cliente" disabled>     
+                            <input type="text" class="form-control input-sm" id="nombre" placeholder="Nombre Cliente">     
                         </div>
                         <div class="col-sm-6 col-md-6">
 <!--                            <label for="direcF">Dirección Factura</label>-->
