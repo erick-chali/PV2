@@ -16,7 +16,7 @@ public class ImplementaLogin implements InterLogin{
 		Connection con = null;
 		CallableStatement stmt = null;
 		ResultSet rs = null;
-		DatosLogin datosUsuario = null;
+		DatosLogin datosUsuario = new DatosLogin();;
 		try{
 			con = new ConectarDB().getConnection();
 			stmt = con.prepareCall("{call stp_UDPV_Get_LoginParams(?,?,?)}");
@@ -28,7 +28,6 @@ public class ImplementaLogin implements InterLogin{
 			
 				while(rs.next()){
 					if(rs.getString("ReadOK").equals("1")){
-					datosUsuario = new DatosLogin();
 					datosUsuario.setCodSucursal(rs.getString("Codigo_Sucursal"));
 					datosUsuario.setSucursal(rs.getString("Sucursal"));
 					datosUsuario.setUsuarioID(rs.getString("UserID"));
@@ -46,8 +45,17 @@ public class ImplementaLogin implements InterLogin{
 				con.close();
 				stmt.close();
 				rs.close();
-			
-			
+
+			con = new ConectarDB().getConnection();
+			stmt = con.prepareCall("{call stp_PV_ConfEmpresa }");
+			rs = stmt.executeQuery();
+			while(rs.next()){
+				datosUsuario.setNombreEmpresa(rs.getString("nombre_empresa"));
+				datosUsuario.setMoneda(rs.getString("simbolo"));
+			}
+			con.close();
+			stmt.close();
+			rs.close();
 			
 		}catch(SQLException e){
 			System.out.println("Error: " + e.getMessage());

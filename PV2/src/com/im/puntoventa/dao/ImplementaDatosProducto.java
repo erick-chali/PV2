@@ -23,7 +23,6 @@ public class ImplementaDatosProducto implements InterfazDatosProducto{
 		Connection con = null;
 		CallableStatement stmt = null;
 		ResultSet rs = null;
-		
 		try{
 			con = new ConectarDB().getConnection();
 			stmt = con.prepareCall("{call stp_obtenerMedida(?,?)}");
@@ -32,6 +31,7 @@ public class ImplementaDatosProducto implements InterfazDatosProducto{
 			rs = stmt.executeQuery();
 			while(rs.next()){
 				unidad = rs.getString("unidad_medida");
+				System.out.println("Unidad de medidad de producto:"+ unidad);
 			}
 
 			con.close();

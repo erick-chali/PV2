@@ -13,7 +13,21 @@ public class DatosLogin {
 	private String codigoVendedor;
 	private int respuesta;
 	private String notificacion;
+	private String nombreEmpresa;
+	private String moneda;
 	
+	public String getNombreEmpresa() {
+		return nombreEmpresa;
+	}
+	public void setNombreEmpresa(String nombreEmpresa) {
+		this.nombreEmpresa = nombreEmpresa;
+	}
+	public String getMoneda() {
+		return moneda;
+	}
+	public void setMoneda(String moneda) {
+		this.moneda = moneda;
+	}
 	public String getCodigoVendedor() {
 		return codigoVendedor;
 	}

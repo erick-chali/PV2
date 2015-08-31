@@ -1,5 +1,5 @@
+
 body {
-  padding-top: 40px;
   padding-bottom: 40px;
   background-color: #eee;
 }
@@ -31,30 +31,46 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+#nombreEmpresa{
+	margin-top: -15px;
+	margin-bottom: -2px;
+	font-size: xx-large;
+	font-weight: bold;
+}
 #cotizacion{
 	margin-top: 15px;
 }
 #ingresaDC{
 	margin-top: 15px;
 }
+/***
 #contenedorDatosVarios{
-	height: 300px;
+	height: 400px;
 	overflow-x: auto;
-}
+}***/
 .contenDescrip{
    /* Styles goes here */
+   /*
    height: 100%;
-   width: 100%;
-   overflow: auto;
+   width: 100%;*/
+   max-width: inherit;
+   max-height: inherit;
+   overflow: hidden;
 }
+#datosVarios{
+	font-size: small;
+}
+/***
 #datosVarios tbody tr td:nth-child(3){
 	width: 150px;
 	height: 25px;
 	overflow: hidden;
-}
+}***/
+/***
 #datosVarios tbody{
-	font-size: small;
-}
+	max-height: 400px;
+	overflow: auto;
+}**/
 .esKit{
 	font-weight: bold;
 	color: #F89406;

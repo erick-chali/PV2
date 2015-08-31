@@ -35,14 +35,15 @@ public class Privilegios extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String user,pass,op,mensaje="";
-		int permiso = 0;
+		String user,pass,mensaje="";
+		int permiso = 0, op = 0;
 		request.getSession().setAttribute("usuario", request.getParameter("usuario"));
 		request.getSession().setAttribute("pass", request.getParameter("pass"));
 		request.getSession().setAttribute("operacion", request.getParameter("operacion"));
 		user = (String) request.getSession().getAttribute("usuario");
 		pass = (String) request.getSession().getAttribute("pass");
-		op = (String) request.getSession().getAttribute("operacion");
+		op = Integer.parseInt((String) request.getSession().getAttribute("operacion"));
+		
 		
 		Connection con = null;
 		CallableStatement stmt = null;
@@ -54,7 +55,7 @@ public class Privilegios extends HttpServlet {
 			stmt = con.prepareCall("{call Stp_UdPv_ValClaves(?,?,?)}");
 			stmt.setString(1, user);
 			stmt.setString(2, pass);
-			stmt.setString(3, op);
+			stmt.setInt(3, op);
 			
 			rs = stmt.executeQuery();
 			
@@ -68,7 +69,9 @@ public class Privilegios extends HttpServlet {
 		}catch(SQLException	e){
 			mensaje = "Error: " + e.getMessage();
 		}
-		if(permiso==1 || permiso  ==0){
+		if(permiso==1){
+			dato.println(permiso);
+		}else if (permiso == 0){
 			dato.println(permiso);
 		}else{
 			dato.println(mensaje);
