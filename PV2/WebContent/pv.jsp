@@ -130,7 +130,7 @@
 						<table id="datosVarios" class="table table-striped table-condensed table-bordered table-hover">
 	                    <thead>
 	                    	<tr style="background-color: #0088CC; color: #ffffff;">
-	                    		
+	                    		<th style="width: 10px"> </th>
 	                    		<th style="width: 75px;">Cod. Prod.</th>
 	                    		<th style="width: 50px;">U. M.</th>
 	                    		<th style="width: 300px;">Descripcion</th>
@@ -150,13 +150,14 @@
 	                    </thead>
 	                    <tbody>
 	                    	<tr>
+	                    		<td class="borrar"><span class="glyphicon glyphicon-minus text-danger" aria-hidden="true"></span></td>
 	                    		<td class="codigoProducto"></td>
 	                    		<td class="medida"></td>
 	                    		<td class="descripcion"><div class="contenDescrip"></div></td>
 	                    		<td class="cantidad"></td>
 	                    		<td class="disponible"></td>
 	                    		<td class="precio"></td>
-	                    		<td class="porcentaje"></td>
+	                    		<td class="porcentaje numeric"></td>
 	                    		<td class="descuento" ></td>
 	                    		<td class="importe"></td>
 	                    		<td class="bodega"></td>
@@ -295,8 +296,8 @@
         
         	
         
-        <!-- Modal -->
-		<div id="autorizar" class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <!-- Modal de autorizaciones -->
+		<div id="autorizar" class="modal fade" role="dialog" data-keyboard="true" tabindex="-1">
 		  <div class="modal-dialog">
 		
 		    <!-- Modal content-->
@@ -544,7 +545,8 @@
 	<script type="text/javascript">
 		var $jq = jQuery.noConflict();
 	</script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>  -->
+	<script src="js/jquery-1.11.3.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/jeditable.min.js"></script>
 	<script src="js/maskedinput.min.js"></script>

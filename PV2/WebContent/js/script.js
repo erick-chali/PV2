@@ -68,7 +68,7 @@
 	   /**EVENTOS*/
 	   fechaActual();
 	   $('#fPago').focus();
-	   $('#toolbar').hide();
+//	   $('#toolbar').hide();
 	   $(document).on('focus', '#tDoc', function (){
 		   $(this).val('');
 	   }); 
@@ -183,6 +183,20 @@
 //			     }
 //			  });
 	   });
+	   
+	   $(document).on('click', '.porcentaje', function (){
+		   $('#indice').text($(this).parent().index());
+		   
+	   });
+	   $(document).on('click', '.borrar', function (){
+		   $(this).parent().remove();
+		   if($('#datosVarios  tbody').children().length == 0){
+			   agregarFila();
+			   hacerCamposEditables();
+			   $('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').trigger('dblclick');
+		   }
+		   
+	   });
 //	   $(document).on('keydown', '.codigoProducto', function(e){
 //		   if(e.keyCode==9){
 //			   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').blur();
@@ -293,13 +307,37 @@
 		   if($('#permisosUsuario').val() == '' || $('#permisosClave').val() == ''){
 			   alert('Debe ingresar usuario y clave.');
 		   }else{
-			   autorizarDocumento($.trim($('#opcionPermisos').text()), $('#permisosUsuario').val(), $('#permisosClave').val());
-			   console.log('Permiso ' +$('#permiso').text());
-			   if($('#permiso').text() == '1'){
-				   console.log('Verdadero');
-			   }else{
-				   console.log('Falso');
-			   }
+			   $.post('Privilegios',{operacion : $('#opcionPermisos').text(), usuario : $('#permisosUsuario').val(), pass : $('#permisosClave').val()} ,function(responseText) {
+				   if(responseText!=null){
+					   if(parseInt(responseText)==1){
+						   $('#permiso').text(responseText);
+						   console.log(responseText);
+						   if($('#opcionPermisos').text() == '7'){
+							   console.log('Tipo documento');
+						   }else if($('#opcionPermisos').text() == '6'){
+							   var resultado = $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.importe').text() * 
+							   					($('#datosVarios > tbody > tr').eq($('#indice').text()).find('.porcentaje').text()/100);
+							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.descuento').text(parseFloat(resultado).toFixed(2));
+							   resultado = $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.importe').text() - 
+							   				$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.descuento').text();
+							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.importe').text(parseFloat(resultado).toFixed(2));
+							   sumarColumnaImporte();
+					   }
+					   }else if(parseInt(responseText)==0){
+						   $('#permiso').text(responseText);
+						   console.log(responseText);
+						   if($('#opcionPermisos').text() == 6){
+							   $('#autorizar').modal('toggle');
+							   alert('credenciales incorrectas');
+							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.porcentaje').text('');
+							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.porcentaje').trigger('dblclick');
+						   }
+					   }
+				   }
+			   });
+//			   autorizarDocumento($.trim($('#opcionPermisos').text()), $('#permisosUsuario').val(), $('#permisosClave').val());
+//			   console.log('Permiso ' +$('#permiso').text());
+			   
 		   }
 		   
 	   });
@@ -318,7 +356,6 @@
 			   hacerCamposEditables();
 			   $('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').trigger('dblclick');
 		   }
-		   alert($('#fechaEntrega').val());
 	   });
 	   
 	   $('#f3').click(function (e){
@@ -451,8 +488,16 @@
 	   });
 	   //grabar el Documento
 	   $('#grabarDocumento').click(function(){
-		   var numFilas = $('#datosVarios >tbody >tr').length;
-		   
+		   var incompletos = 0 ;
+		   $('#datosVarios tbody tr').each(function (index){
+			   if($('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text()=='' || $('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text()=='--'){
+				   incompletos += Number(1);
+			   }
+		   });
+		   if(incompletos > 0){
+			   alert('Debe llenar todas las filas antes de grabar el documento, o de lo contrario, elimine las que no desee.');
+		   }else{
+			   var numFilas = $('#datosVarios >tbody >tr').length;
 			   $('#numFilas').text(numFilas);
 			   $.post('IngresarEnc',{
 				   codigoCliente : $('#codigoCliente').text(), nit : $('#nit').val(), nombreCliente : $('#nombre').val(),
@@ -473,16 +518,34 @@
 					   guardarDetalle(numDocumento);
 				   }   
 			   });
-		   
-
-//			   guardarDetalle(57074);
-//		   guardarDetalle(57043);
+		   }
 		   
 //		   
 	   });
 	   $(document).on('keydown', '.cantidad', function (e){
 		   //en el arreglo las teclas permitidas
 		   if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110]) !== -1 ||
+		            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+		            (e.keyCode >= 35 && e.keyCode <= 40)) {
+		                 return;
+		        }
+		        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+		            e.preventDefault();
+		        }
+	   });
+	   $(document).on('keydown', '.codigoProducto', function (e){
+		   //en el arreglo las teclas permitidas
+		   if ($.inArray(e.keyCode, [8, 9, 27, 13, 68,70]) !== -1 ||
+		            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+		            (e.keyCode >= 35 && e.keyCode <= 40)) {
+		                 return;
+		        }
+		        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+		            e.preventDefault();
+		        }
+	   });
+	   $(document).on('keypress', '.porcentaje', function (e){
+		   if ($.inArray(e.keyCode, [8, 9, 27, 13, 110]) !== -1 ||
 		            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
 		            (e.keyCode >= 35 && e.keyCode <= 40)) {
 		                 return;
@@ -737,6 +800,7 @@
    function cargarDatosNit(nit){
 	   $.post('InformacionNit',{nit : nit} ,function(responseJson) {
 		   if(responseJson!=null){
+			   $('#codigoCliente').text('');
 			   $.each(responseJson, function(key, value) {
 					$('#nit').val(value['nit']);
 					$('#nombre').val(value['nombreCliente']);
@@ -749,7 +813,11 @@
 					$('#saldoCliente').text(value['saldo']);
 			    });
 		   }
-				   
+		   if($('#codigoCliente').text()==''){
+			   alert('EL NIT ES INCORRECTO O NO EXISTE EN LA DB.');
+			   $('#nit').val('');
+			   $('#nit').focus();
+		   }
 	   });
    }
    //funcion cargar datos del tipo documento
@@ -829,11 +897,17 @@
 			   if(parseInt(responseText)==1){
 				   $('#permiso').text(responseText);
 				   console.log(responseText);
+				   if(operacion == 7){
+					   console.log('ejecutar cantidad');
+				   }
 //				   cargarDatosDoc(1, noDoc);
 //				   $('#autorizar').modal('toggle');
 			   }else if(parseInt(responseText)==0){
 				   $('#permiso').text(responseText);
 				   console.log(responseText);
+				   if(operacion == 7){
+					   console.log('regreso a celda de porcentaje');
+				   }
 //				   ('#notificacion').text(responseText);
 			   }
 		   }
@@ -1175,6 +1249,7 @@
     function agregarFila(){
     	var filaNueva = $(
 	   			'<tr>' +
+	   				'<td class="borrar"><span class="glyphicon glyphicon-minus text-danger" aria-hidden="true"></span></td>'+
             		'<td class="codigoProducto"></td>'+
             		'<td class="medida"></td>'+
             		'<td class="descripcion"><div class="contenDescrip"></div></td>'+
@@ -1225,6 +1300,18 @@
     		
     	}
     }
+    function ejecutarPorcentaje(porcentaje, indice){
+    	if(porcentaje > 100 ){
+            alert('El porcentaje de descuento no puede ser mayor a 100 ');
+        }else if(porcentaje > $('#datosVarios > tbody > tr').eq(indice).find('.dm').text()){
+            $('#autorizar').modal('toggle');
+            $('#permisosUsuario').val('');
+            $('#permisosClave').val('');
+            $('#opcionPermisos').text('6');
+            $('#permisosUsuario').focus();
+            
+        }
+    }
     function hacerCamposEditables(){
     	$('.codigoProducto').editable(function(value, settings) {
 		     return(value);
@@ -1255,8 +1342,7 @@
 		     event   : 'dblclick',
 		     style   : 'inherit',
 		     callback : function(value, settings) {
-		    	 
-//		    	 ejecutarCantidad(value, $('#indice').text());
+		    	 ejecutarPorcentaje(value, $('#indice').text());
 		     }
 		  });
     }
