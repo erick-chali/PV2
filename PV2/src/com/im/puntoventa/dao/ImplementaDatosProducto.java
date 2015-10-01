@@ -29,11 +29,14 @@ public class ImplementaDatosProducto implements InterfazDatosProducto{
 			stmt.setString(1, codigoProducto);
 			stmt.setInt(2, 1);
 			rs = stmt.executeQuery();
+
+//			if(rs==null){
+//				unidad = "25";
+//			}
 			while(rs.next()){
 				unidad = rs.getString("unidad_medida");
 				System.out.println("Unidad de medidad de producto:"+ unidad);
 			}
-
 			con.close();
 			stmt.close();
 			rs.close();

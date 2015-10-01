@@ -26,9 +26,19 @@ public class BuscarImagen extends HttpServlet {
      * @see HttpServlet#HttpServlet()
      */
     public BuscarImagen() {
-        super();
+        super(); 
         // TODO Auto-generated constructor stub
     }
+    
+	/* (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+//		super.doGet(req, resp);
+	}
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -37,23 +47,43 @@ public class BuscarImagen extends HttpServlet {
 		String codigoP = null;
 		request.getSession().setAttribute("codigoProducto", request.getParameter("codigoProducto"));
 		codigoP = (String) request.getSession().getAttribute("codigoProducto");
+		System.out.println("Codigo producto" + codigoP);
 		Connection con = null;
 		CallableStatement stmt = null;
 		ResultSet rs = null;
+		String imagen = null;
+
 		
-		response.setContentType("text/html");
-		PrintWriter respuesta = response.getWriter();
+		
 		try{
+			
 			con = new ConectarDB().getConnection();
 			stmt = con.prepareCall("{call stp_PVBuscaImgProducto(?)}");
 			stmt.setString(1, codigoP);
 			rs = stmt.executeQuery();
 			while(rs.next()){
-				respuesta.println(rs.getString("Imagen"));
+				imagen = rs.getString("Imagen");
+				System.out.println(imagen);
 			}
+			if(imagen!=null){
+				PrintWriter respuesta = response.getWriter();
+				respuesta.write(imagen);
+				System.out.println("Imagen: " + imagen);
+			}else if(imagen == null){
+				imagen = "0";
+				PrintWriter respuesta = response.getWriter();
+				respuesta.write(imagen);
+				System.out.println("Imagen: " + imagen);
+			}
+			stmt.close();
+			con.close();
+			rs.close();
 		}catch(SQLException e){
-			respuesta.println("Error: " + e.getMessage());
+			e.printStackTrace();
 		}
+		
+		
+		
 	}
 
 }

@@ -6,7 +6,7 @@ public class DatosEnc {
 	
 	public DatosEnc(String codigoCliente, String nit, String nombreCliente, String direcFactura, String tipoDocumento,
 			String noDocumento, String fechaVence, String tipoPago, String tipoCredito, String autoriza,
-			String montoVenta, String montoTotal, String observaciones, String autorizoDespacho) {
+			String montoVenta, String montoTotal, String observaciones, String autorizoDespacho, String serieEnc, String noEnc) {
 		this.setCodigoCliente(codigoCliente);
 		this.setNit(nit);
 		this.setNombreCliente(nombreCliente);
@@ -21,7 +21,8 @@ public class DatosEnc {
 		this.setMontoTotal(montoTotal);
 		this.setObservaciones(observaciones);
 		this.setAutorizoDespacho(autorizoDespacho);
-		
+		this.setSerieEnc(serieEnc);
+		this.setNoEnc(noEnc);
 	}
 	
 	private String codigoCliente;
@@ -62,7 +63,16 @@ public class DatosEnc {
 	private String autorizoDespacho;
 	private String saldo;
 	private String noEnc;
+	private String serieEnc;
 	
+	public String getSerieEnc() {
+		return serieEnc;
+	}
+
+	public void setSerieEnc(String serieEnc) {
+		this.serieEnc = serieEnc;
+	}
+
 	public String getNoEnc() {
 		return noEnc;
 	}

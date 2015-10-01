@@ -1,3 +1,7 @@
+<%@page import="com.im.puntoventa.conexion.ConectarDB"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.CallableStatement"%>
+<%@page import="java.sql.Connection"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
@@ -20,40 +24,11 @@
     <!-- Pushy Menu -->
         <nav class="pushy pushy-left">
             <ul>
-                <li><a href="pv.jsp">Punto Venta</a></li>
+                <li><a>Punto Venta</a></li>
                 <li><a href="Logout">Cerrar Sesi&oacute;n</a></li>
             </ul>
         </nav>
         <div class="site-overlay"></div>
-    <!-- Fixed navbar -->
-    <!--  
-    <nav class="navbar navbar-inverse navbar-fixed-top" id="barraNavegacion">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="pv.jsp">Punto venta</a></li>
-            <li><a href="datoscliente.jsp">Ingreso Datos Cliente</a></li>
-            <li><a href="">Cambio Tipo Cliente</a></li>
-            <li><a href="">Cambio Vendedor</a></li>
-            
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-          	<li></li>
-            <li><a href="Logout"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Cerrar Sesion</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    -->
-    <!-- FIXED NAVBAR -->
     <div id="container">
         <div class="panel panel-default">
                 <div class="panel-body">
@@ -63,13 +38,15 @@
                     			<label id="codigoCliente"></label>
                     			<label id="codigoProd"></label>
                     			<label id="numFilas"></label>
-                    			<label id="numDocumento"></label>
                     			<label id="saldoCliente"></label>
                     			<label id="tipoCliente"></label>
                     			<label id="mensaje"></label>
                     			<label id="codigoLista">1</label>
                     			<label id="fechaPrueba"></label>
                     			<label id="permiso"></label>
+                    			<label id="caja">0</label>
+                    			<label id="numDoc"></label>
+                    			<label id="serie"></label>
                     		</div>
                     
                     
@@ -81,6 +58,9 @@
                     		</button>
                     		<button type="button" id="barra" class="btn btn-primary btn-sm menu-btn" style="margin-top: 2px;">
                     			<span id="superiorDown" class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+                    		</button>
+                    		<button type="button" id="ayuda" class="btn btn-primary btn-sm" style="margin-top: 2px;">
+                    			<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
                     		</button>
                     	</div>
                     	<div class="col-sm-1 col-md-1" >
@@ -115,7 +95,7 @@
                             	<span class="input-group-addon">${moneda}</span>
                                 <input type="text" class="form-control input-sm" placeholder="Limite de Cr&eacute;dito" id="lCredito" disabled>
                                 <span class="input-group-btn">
-                                    <button class="btn btn-primary btn-sm" type="button" id="exp">
+                                    <button class="btn btn-primary btn-sm" type="button" id="exportarPDf">
                                     	<span class="glyphicon glyphicon-export" aria-hidden="true"></span>
                                     </button>
                                 </span>
@@ -130,9 +110,9 @@
 						<table id="datosVarios" class="table table-striped table-condensed table-bordered table-hover">
 	                    <thead>
 	                    	<tr style="background-color: #0088CC; color: #ffffff;">
-	                    		<th style="width: 10px"> </th>
+	                    		<th style="width: 30px"> </th>
 	                    		<th style="width: 75px;">Cod. Prod.</th>
-	                    		<th style="width: 50px;">U. M.</th>
+	                    		<th style="width: 20px;">U.M.</th>
 	                    		<th style="width: 300px;">Descripcion</th>
 	                    		<th style="width: 50px;">Cant.</th>
 	                    		<th style="width: 50px;">Disp.</th>
@@ -145,15 +125,16 @@
 	                    		<th style="width: 25px;">DM</th>
 	                    		<th style="width: 100px;">Observaciones</th>
 	                    		<th class="kit">Es Kit</th>
+	                    		<th class="correlativo"> </th>
 	                    		
 	                    	</tr>
 	                    </thead>
 	                    <tbody>
 	                    	<tr>
-	                    		<td class="borrar"><span class="glyphicon glyphicon-minus text-danger" aria-hidden="true"></span></td>
+	                    		<td class=""><span class="glyphicon glyphicon-minus text-danger borrar" aria-hidden="true"></span>  <span class="glyphicon glyphicon-eye-open ojoProducto" aria-hidden="true"></span></td>
 	                    		<td class="codigoProducto"></td>
 	                    		<td class="medida"></td>
-	                    		<td class="descripcion"><div class="contenDescrip"></div></td>
+	                    		<td class="descripcion"><div class="contenDescrip" data-toggle="tooltip"></div></td>
 	                    		<td class="cantidad"></td>
 	                    		<td class="disponible"></td>
 	                    		<td class="precio"></td>
@@ -165,6 +146,7 @@
 	                    		<td class="dm" ></td>
 	                    		<td class="obser"></td>
 	                    		<td class="kit"></td>
+	                    		<td class="correlativo"></td>
 	                    	</tr>
 	                    </tbody>
                     </table>
@@ -199,6 +181,7 @@
                     	</div>
                         <div class="col-sm-2 col-md-2">
                             <div class="input-group">
+                            	<span class="input-group-addon" id="serieDoc"></span>
                                 <input type="text" class="form-control input-sm" placeholder="No. Documento" id="nDoc">
                                 <span class="input-group-btn">
                                     <button class="btn btn-primary btn-sm" type="button" id="f3">F3</button>
@@ -216,7 +199,7 @@
                     		<h6 style="color: #c12929;">F. Entrega</h6>
                     	</div>
                         <div class="col-sm-2 col-md-2">
-                        	<input type="text" id="fechaEntrega" class="form-control input-sm" data-beatpicker="true" data-beatpicker-position="['left','*']" data-beatpicker-format="['DD','MM','YYYY'],separator:'/'" data-beatpicker-disable="{from:[2015,8,28],to:'<'}" />
+                        	<input type="text" id="fechaEntrega"  data-beatpicker="true" data-beatpicker-format="['DD','MM','YYYY'],separator:'/'" data-beatpicker-disable="{from:[2015,8,28],to:'<'}" />
                             <!--<input type="text" class="form-control input-sm" id="fechaEntrega">-->
                         </div>
                     </div><!--fin de fila-->
@@ -276,17 +259,20 @@
                     </div>
                     
                     <div class="row">
-                        <div class="col-sm-3 col-md-3 text-center">
+                        <div class="col-sm-2 col-md-2 text-center">
                         	<h5 id="fecha"></h5>
                         </div>
-                        <div class="col-sm-3 col-md-3 text-center">
+                        <div class="col-sm-2 col-md-2 text-center">
                             <h5>${sucursal}</h5>
                         </div>
-                        <div class="col-sm-3 col-md-3 text-center">
-                            <h5>${usuario}</h5>  
+                        <div class="col-sm-2 col-md-2 text-center">
+                            <h5>Usuario: ${usuario}</h5>  
                         </div>
-                        <div class="col-sm-3 col-md-3 text-center">
-                            <h5>${vendedor}</h5>    
+                        <div class="col-sm-2 col-md-2 text-center">
+                            <h5>Nombre: ${vendedor}</h5>    
+                        </div>
+                        <div class="col-sm-4 col-md-4 text-center">
+                            <h5>DB: ${nombreDB}</h5>    
                         </div>
                     </div><!--fin de fila-->
                 </div>
@@ -324,7 +310,7 @@
 		</div><!-- FIN DE MODAL -->
 		
 		<!-- Modal BUSQUEDA DOCUMENTOS -->
-		<div id="buscarDocumentos" class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="true" tabindex="-1">
+		<div id="buscarDocumentos" class="modal fade" role="dialog" data-keyboard="true" tabindex="-1">
 		  <div class="modal-dialog modal-lg">
 		    <!-- Modal content-->
 		    <div class="modal-content">
@@ -356,7 +342,7 @@
 		</div><!-- FIN DE MODAL -->
 		
 		<!-- Modal BUSQUEDA PRODUCTOS -->
-		<div id="buscarProductos" class="modal" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="true" tabindex="-1">
+		<div id="buscarProductos" class="modal fade" role="dialog"  data-keyboard="true" tabindex="-1">
 		  <div class="modal-dialog modal-lg">
 		    <!-- Modal content-->
 		    <div class="modal-content">
@@ -390,12 +376,12 @@
 		</div><!-- FIN DE MODAL -->
 		
 		<!-- Modal BUSQUEDA PRODUCTOS OTRAS BODEGAS -->
-		<div id="buscarProductosBodegas" class="modal" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="true" tabindex="-1">
+		<div id="buscarProductosBodegas" class="modal" role="dialog" data-keyboard="true" tabindex="-1">
 		  <div class="modal-dialog modal-lg">
 		    <!-- Modal content-->
 		    <div class="modal-content">
 		      <div class="modal-header">
-		      	<button type="button" class="close visible-sm visible-xs" data-dismiss="modal">&times;</button>
+		      	<button type="button" class="close" data-dismiss="modal">&times;</button>
 		        <h4 class="modal-title">Busqueda de Productos en Otras Bodegas</h4>
 		      </div>
 		      <div class="modal-body">
@@ -422,12 +408,12 @@
 		</div><!-- FIN DE MODAL -->
 		
 		<!-- Modal BUSQUEDA PAGOS -->
-		<div id="buscarPagos" class="modal" role="dialog" aria-hidden="true" data-backdrop="static" tabindex="-1">
-		  <div class="modal-dialog modal-lg">
+		<div id="buscarPagos" class="modal" role="dialog" data-keyboard="true" tabindex="-1">
+		  <div class="modal-dialog">
 		    <!-- Modal content-->
 		    <div class="modal-content">
 		      <div class="modal-header">
-		      	<button type="button" class="close visible-sm visible-xs" data-dismiss="modal">&times;</button>
+		      	<button type="button" class="close" data-dismiss="modal">&times;</button>
 		        <h4 class="modal-title">Busqueda de Pagos</h4>
 		      </div>
 		      <div class="modal-body">
@@ -445,12 +431,12 @@
 		
 		
 		<!-- Modal BUSQUEDA Clientes -->
-		<div id="buscarClientes" class="modal" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="true" tabindex="-1">
+		<div id="buscarClientes" class="modal" role="dialog" data-keyboard="true" tabindex="-1">
 		  <div class="modal-dialog modal-lg">
 		    <!-- Modal content-->
 		    <div class="modal-content">
 		      <div class="modal-header">
-		      	<button type="button" class="close visible-sm visible-xs" data-dismiss="modal">&times;</button>
+		      	<button type="button" class="close" data-dismiss="modal">&times;</button>
 		        <h4 class="modal-title">Busqueda de Clientes</h4>
 		      </div>
 		      <div class="modal-body">
@@ -479,12 +465,12 @@
 		
 		
 		<!-- Modal BUSQUEDA Clientes -->
-		<div id="detallesKit" class="modal" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="true" tabindex="-1">
+		<div id="detallesKit" class="modal" role="dialog" data-keyboard="true" tabindex="-1">
 		  <div class="modal-dialog modal-lg">
 		    <!-- Modal content-->
 		    <div class="modal-content">
 		      <div class="modal-header">
-		      	<button type="button" class="close visible-sm visible-xs" data-dismiss="modal">&times;</button>
+		      	<button type="button" class="close" data-dismiss="modal">&times;</button>
 		        <h4 class="modal-title" id="tituloModalKit"></h4>
 		      </div>
 		      <div class="modal-body">
@@ -502,8 +488,8 @@
 		</div><!-- FIN DE MODAL -->
 		
 		<!-- Modal BUSQUEDA INFORMACION PRODUCTO -->
-		<div id="infoProducto" class="modal" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="true" tabindex="-1">
-		  <div class="modal-dialog modal-lg">
+		<div id="infoProducto" class="modal" role="dialog" data-keyboard="true" tabindex="-1">
+		  <div class="modal-dialog">
 		    <!-- Modal content-->
 		    <div class="modal-content">
 		      <div class="modal-header">
@@ -520,9 +506,10 @@
 				<div class="tab-content">
 				  <div id="imagenProducto" class="tab-pane fade in active">
 				  	<div class="row">
-					  <div class="col-xs-6 col-sm-6 col-md-6">
-					    <a href="#" class="thumbnail">
-					      <img id="imgProducto">
+					  <div id="contenedorImagen"class="col-xs-6 col-sm-6 col-md-6">
+					    <a href="#" class="thumbnail" id="thumbIMG">
+					    	
+					      <!--<img id="imgProducto">-->
 					    </a>
 					  </div>
 					</div>

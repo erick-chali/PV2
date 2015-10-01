@@ -7,8 +7,18 @@
     		console.log(response.ip);
     	    
     	}, "jsonp");
+    	var device = navigator.userAgent
+
+    	if (device.match(/Iphone/i)|| device.match(/Ipod/i)|| device.match(/Android/i)|| device.match(/J2ME/i)|| device.match(/BlackBerry/i)|| device.match(/iPhone|iPad|iPod/i)|| device.match(/Opera Mini/i)|| device.match(/IEMobile/i)|| device.match(/Mobile/i)|| device.match(/Windows Phone/i)|| device.match(/windows mobile/i)|| device.match(/windows ce/i)|| device.match(/webOS/i)|| device.match(/palm/i)|| device.match(/bada/i)|| device.match(/series60/i)|| device.match(/nokia/i)|| device.match(/symbian/i)|| device.match(/HTC/i))
+    	{
+    	window.location = "movil.pv.jsp";
+
+    	}
+    	else
+    	{
+    		console.log('Dispositivo Normal');
+    	}
     	
-   
 	   var codigoP, descripcion, medida, cantidad, disponible, precioU, porDesc, descuento, importe, envio, dm, observ;
 	   var subTotal = 0;
 	   var Total;
@@ -23,7 +33,7 @@
 	   $('#barra').click(function (){
 		   $('#barraNavegacion').toggle('fast');
 	   });
-	   
+	   hacerCamposEditables();
 	   $('#fechaEntrega').mask('99/99/9999',{placeholder:"dd/mm/yyyy"});
 	   
 //	   $('#indice').hide();
@@ -50,21 +60,42 @@
 	   			$('#filtroTextoProductos').val('');
 	   			$('#contenedorProductos').empty();
 	   			$('#buscarProductos').modal('toggle');
+           }else if(e.keyCode==119){
+        	   encontrarImagen($('#indice').text());
+        	   
            }
 	   });
 	   /**EVENTOS*/
 	   fechaActual();
 	   $('#fPago').focus();
+//	   $('#toolbar').hide();
+	   $(document).on('focus', '#tDoc', function (){
+		   $(this).val('');
+	   }); 
 	   $('#tDoc').keydown(function(e){
-		   if(e.keyCode==13){
-			   cargarDatosDoc(1,$(this).val());
+		   if(e.keyCode == 13){
+//			   var opcionMandada = 0;
+//			   if($.trim(separarTexto(0, $(this).val())) == '1' || $.trim(separarTexto(0, $(this).val())) == '3' || $.trim(separarTexto(0, $(this).val())) == '4'){
+//				   if($.trim(separarTexto(0, $(this).val())) == 1){
+//					   opcionMandada = 7;
+//				   }else{
+//					   opcionMandada = $.trim(separarTexto(0, $(this).val()));
+//				   }
+//				   $('#autorizar').modal('toggle');
+//				   $('#permisosUsuario').val('');
+//				   $('#permisosClave').val('');
+//				   $('#opcionPermisos').text(opcionMandada);
+//				   $('#permisosUsuario').focus();
+//			   }else{
+				   cargarDatosDoc(1,$(this).val());
+//			   }
 		   }
 		   
 	   });
 	   $('#fPago').keydown(function(e){
 		   if(e.keyCode==13){
-			   cargarDatosPago(3,$(this).val(),$('#lCredito').val());
 			   
+			   cargarDatosPago(3,$(this).val(),$('#lCredito').val());
 		   }
 		   
 	   });
@@ -74,32 +105,6 @@
 			   cargarDatosNit($(this).val());
 		   }
 	   });
-        $(document).on('keydown', '#porcentaje', function (e){
-            if(e.keyCode==13){
-                var indiceFila = $(this).parent().parent().index();
-                $('#indice').text(indiceFila);
-                codigoP = $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(0).children().val();
-	   			$('#codigoProd').text(codigoP);
-	   			var porcentaje = $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(6).children().val();
-	   			var dm = $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(11).children().val();
-	   			var im = $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(8).children().val();
-	   			
-	   			if(porcentaje == ' '){
-	   				
-	   			}else if(porcentaje > dm){
-	   				$('#autorizar').modal('toggle');
-	   			}else{
-	   				temporal = separarTexto(1, $('#subTotal').text());
-	   				var porCan = parseFloat(im * (porcentaje/100)).toFixed(2);
-	   				$('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(7).children().val(porCan);
-	   				$('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(8).children().val(im-porCan);
-	   				alert(im-porCan);
-	   				$('#subTotal').text('SubTotal: ' + (im-porCan));
-	   				$('#total').text('Total: ' + (im-porCan));
-	   				
-	   			}
-            }
-        });
 	   $('#siBodegas').click(function(){
 		   $('#botones').hide();
 		   $('#escondido').show();
@@ -108,56 +113,149 @@
 		   cp = $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(0).text();
 		   cargarProductosFiltroBodegas($('#codigoLista').text(), "", separarTexto(0, $('#fPago').val()), cp);
 	   });
-	   
-	   $('#datosVarios').on('click', '.codigoProducto', function (){
+	   $(document).on('click', '.codigoProducto', function (){
 		   if($('#fPago').val() == ''){
 			   	alert('Debe ingresar una forma de pago antes de buscar cualquier producto');/***INCLUIR EN MODAL DE ERRORES ***/
 	   			$('#divFormaPago').addClass('has-error');
 	   			$('#fPago').focus();
 	   			$('#indice').text($(this).parent().index());
 		   }else{
+			   $('#indice').text($(this).parent().index());
 			   $('#divFormaPago').removeClass('has-error');
-			   $('.codigoProducto').editable(function(value, settings) {
-				   $('#indice').text($(this).parent().index());
-				     return(value);
-				  }, {
-				     onblur  : 'cancel',
-				     style   : 'inherit',
-				     callback : function(value, settings) {
-				    	 traerProducto(value, separarTexto(0, $('#fPago').val()), $('#codigoLista').text() ,$('#indice').text());
-				    	 
-				    	 
-				     }
-				  });
+//			   $('.codigoProducto').editable(function(value, settings) {
+//				     return(value);
+//				  }, {
+//				     onblur  : 'cancel',
+//				     event   : 'dblclick',
+//				     style   : 'inherit',
+//				     callback : function(value, settings) {
+//				    	 traerProducto(value, separarTexto(0, $('#fPago').val()), $('#codigoLista').text() ,$('#indice').text());
+//				    	 
+//				     }
+//				  });
 		   }
 	   });
+	   $('#datosVarios').on('click', '.verInfoProd', function(){
+		   $('#indice').text($(this).parent().parent().index());
+		   encontrarImagen($('#indice').text())
+	   });
 	   $(document).on('click', '.cantidad', function (){
-		   $('#indice').text($(this).parent().index());
-		   var indice;
-		   indice = $('#indice').text();
-		   $('.cantidad').editable(function(value, settings) {
-			     return(value);
-			  }, {
-			     onblur  : 'cancel',
-			     event   : 'dblclick',
-			     style   : 'inherit',
-			     callback : function(value, settings) {
-			    	 
-			    	 ejecutarCantidad(value, $('#indice').text());
-			     }
-			  });
+		   if($('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').text()=='' || $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').text()=='--'){
+			   alert('Debe ingresar un codigo de producto para poder ingresar cantidad');
+		   }else{
+			   $('#indice').text($(this).parent().index());
+			   var indice;
+			   indice = $('#indice').text();
+		   }
+		   
+//		   $('.cantidad').editable(function(value, settings) {
+//			     return(value);
+//			  }, {
+//			     onblur  : 'cancel',
+//			     event   : 'dblclick',
+//			     style   : 'inherit',
+//			     callback : function(value, settings) {
+//			    	 
+//			    	 ejecutarCantidad(value, $('#indice').text());
+//			     }
+//			  });
 	   });
 	   
+	   $(document).on('click', '.porcentaje', function (){
+		   $('#indice').text($(this).parent().index());
+		   
+	   });
+	   $(document).on('click', '.borrar', function (){
+		   $(this).parent().parent().remove();
+		   if($('#datosVarios  tbody').children().length == 0){
+			   agregarFila();
+			   hacerCamposEditables();
+			   $('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').trigger('click');
+		   }
+		   
+	   });
+//	   $(document).on('keydown', '.codigoProducto', function(e){
+//		   if(e.keyCode==9){
+//			   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').blur();
+//			   $('.cantidad').editable(function(value, settings) {
+//				     return(value);
+//				  }, {
+//				     onblur  : 'cancel',
+//				     event   : 'dblclick',
+//				     style   : 'inherit',
+//				     callback : function(value, settings) {
+//				    	 
+//				    	 ejecutarCantidad(value, $('#indice').text());
+//				     }
+//				  });
+//			   console.log('teclas presionadas');
+//	 			$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.cantidad').trigger('dblclick');
+//		   }
+//	   });
+//	   $(document).on('click', '.descripcion', function (){
+//		   $('.descripcion').popover({
+//			   	trigger: 'hover',
+//		        placement: 'top',
+//		        content: function() {
+//		           var message = $(this).text();
+//		             return message;
+//		        }
+//		    });
+//	   });
 	   $('#autorizacion').click(function (e){
-		   autorizarDocumento($('#tDoc').val());
+		   if($('#permisosUsuario').val() == '' || $('#permisosClave').val() == ''){
+			   alert('Debe ingresar usuario y clave.');
+		   }else{
+			   $.post('Privilegios',{operacion : $('#opcionPermisos').text(), usuario : $('#permisosUsuario').val(), pass : $('#permisosClave').val()} ,function(responseText) {
+				   if(responseText!=null){
+					   if(parseInt(responseText)==1){
+						   $('#permiso').text(responseText);
+						   console.log(responseText);
+						   if($('#opcionPermisos').text() == '7'){
+							   console.log('Tipo documento');
+						   }else if($('#opcionPermisos').text() == '6'){
+							   var resultado = $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.importe').text() * 
+							   					($('#datosVarios > tbody > tr').eq($('#indice').text()).find('.porcentaje').text()/100);
+							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.descuento').text(parseFloat(resultado).toFixed(2));
+							   resultado = $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.importe').text() - 
+							   				$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.descuento').text();
+							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.importe').text(parseFloat(resultado).toFixed(2));
+							   sumarColumnaImporte();
+					   }
+					   }else if(parseInt(responseText)==0){
+						   $('#permiso').text(responseText);
+						   console.log(responseText);
+						   if($('#opcionPermisos').text() == 6){
+							   $('#autorizar').modal('toggle');
+							   alert('credenciales incorrectas');
+							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.porcentaje').text('');
+							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.porcentaje').trigger('click');
+						   }
+					   }
+				   }
+			   });
+//			   autorizarDocumento($.trim($('#opcionPermisos').text()), $('#permisosUsuario').val(), $('#permisosClave').val());
+//			   console.log('Permiso ' +$('#permiso').text());
+			   
+		   }
+		   
 	   });
 	   
 	   $('#agregarFila').click(function (e){
-//		   $('#datosVarios tbody tr').each(function (index){
-//			   $('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text();
-//		   });
-		   	 agregarFila();
-           });
+		   var incompletos = 0 ;
+		   $('#datosVarios tbody tr').each(function (index){
+			   if($('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text()=='' || $('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text()=='--'){
+				   incompletos += Number(1);
+			   }
+		   });
+		   if(incompletos > 0){
+			   alert('No puede dejar una fila sin completar.');
+		   }else{
+			   agregarFila();
+			   hacerCamposEditables();
+			   $('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').trigger('click');
+		   }
+	   });
 	   
 	   $('#f3').click(function (e){
 		   $('#buscarDocumentos').modal('toggle');
@@ -249,12 +347,12 @@
 	   $jq("table[id$='tablaProductosBodega'] td").live('click',function(event) {  
 			//Para evitar que el link actue.  
 		   event.preventDefault();  
-		   var $td= $(this).closest('tr').children('td');
-		   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.disponible').text($td.eq(4).text());
+		   var $td= $(this).closest('tr');
+		   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.disponible').text($td.find('.xBodegasDisponible').text());
 		   console.log($('#indice').text());
-		   console.log('Disponible: ' + $td.eq(4).text());
-		   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.bodega').text($td.eq(5).text());
-		   console.log('Bodega ' + $td.eq(5).text());
+		   console.log('Disponible: ' + $td.find('.xBodegasDisponible').text());
+		   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.bodega').text($td.find('.xBodegasBodega').text());
+		   console.log('Bodega ' + $td.find('.xBodegasBodega').text());
 		   
 		   $('#buscarProductosBodegas').modal('toggle');
 		   //enfocar cantidad
@@ -289,8 +387,16 @@
 	   });
 	   //grabar el Documento
 	   $('#grabarDocumento').click(function(){
-		   var numFilas = $('#datosVarios >tbody >tr').length;
-		   
+		   var incompletos = 0 ;
+		   $('#datosVarios tbody tr').each(function (index){
+			   if($('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text()=='' || $('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text()=='--'){
+				   incompletos += Number(1);
+			   }
+		   });
+		   if(incompletos > 0){
+			   alert('Debe llenar todas las filas antes de grabar el documento, o de lo contrario, elimine las que no desee.');
+		   }else{
+			   var numFilas = $('#datosVarios >tbody >tr').length;
 			   $('#numFilas').text(numFilas);
 			   $.post('IngresarEnc',{
 				   codigoCliente : $('#codigoCliente').text(), nit : $('#nit').val(), nombreCliente : $('#nombre').val(),
@@ -311,14 +417,42 @@
 					   guardarDetalle(numDocumento);
 				   }   
 			   });
-		   
-
-//			   guardarDetalle(57074);
-//		   guardarDetalle(57043);
+		   }
 		   
 //		   
 	   });
-	   
+	   $(document).on('keydown', '.cantidad', function (e){
+		   //en el arreglo las teclas permitidas
+		   if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110]) !== -1 ||
+		            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+		            (e.keyCode >= 35 && e.keyCode <= 40)) {
+		                 return;
+		        }
+		        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+		            e.preventDefault();
+		        }
+	   });
+	   $(document).on('keydown', '.codigoProducto', function (e){
+		   //en el arreglo las teclas permitidas
+		   if ($.inArray(e.keyCode, [8, 9, 27, 13, 68,70]) !== -1 ||
+		            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+		            (e.keyCode >= 35 && e.keyCode <= 40)) {
+		                 return;
+		        }
+		        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+		            e.preventDefault();
+		        }
+	   });
+	   $(document).on('keypress', '.porcentaje', function (e){
+		   if ($.inArray(e.keyCode, [8, 9, 27, 13, 110]) !== -1 ||
+		            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+		            (e.keyCode >= 35 && e.keyCode <= 40)) {
+		                 return;
+		        }
+		        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+		            e.preventDefault();
+		        }
+	   });
    });/**fin de document.ready*/
     function cargarDetalle(tipoDoc, serie, numDocumento){
     	$.post('CargarDetalle',{tipoDoc : tipoDoc, serie : serie, numDocumento : numDocumento} ,function(responseJson) {
@@ -346,6 +480,7 @@
 	 		            	'</tr>');
 	 				  	rowNew.appendTo($('table#datosVarios tbody'));
 	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.codigoProducto').text(value['codigoProducto']);
+	 				  	console.log($.trim(value['codigoProducto']));
 	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.medida').text(value['uMedida']);
 	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.descripcion').children().text(value['descripcion']);
 	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.cantidad').text(parseInt(value['cantidad']));
@@ -449,8 +584,9 @@
 	    
         $.post('TraerProducto',{codigo : codigoProducto, lista : lista, formaPago : tipoPago} ,function(responseJson){
 		 		   if(responseJson!=null){
+		 			   console.log('Existe Producto');
 		 			   $.each(responseJson, function(key, value) {
-		 				   $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text($.trim(value['codigoProducto']));
+		 				  $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text($.trim(value['codigoProducto']));
 		 				   $('#datosVarios > tbody > tr').eq(indiceFila).find('.medida').text(value['medida']);
 		 				   $('#datosVarios > tbody > tr').eq(indiceFila).find('.descripcion').children().text(value['descripcionProducto']);
 		 				   $('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').text(parseInt(0));
@@ -469,24 +605,20 @@
 		 					  $('#datosVarios > tbody > tr').eq(indiceFila).css({"color": "#000000", "font-weight": "normal"});
 		 					  
 		 				   }
-		 			    });
-		 			  sumarColumnaImporte();
-		 			 $('.cantidad').editable(function(value, settings) {
-		 				 console.log('Valor: ' + value + ' indice: ' + $('#indice').text());
-					     return(value);
-					  }, {
-					     onblur  : 'cancel',
-					     event   : 'dblclick',
-					     style   : 'inherit',
-					     callback : function(value, settings) {
-					    	 
-					    	 ejecutarCantidad(value, $('#indice').text());
-					    	 
-					     }
-					  });
-		 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').trigger('dblclick');
-		 		   }
 		 				   
+		 			    });
+		 		   }
+		 		   if($('#datosVarios > tbody > tr').eq(indiceFila).find('.descripcion').text()==''){
+		 			   alert('codigo de producto no existe en la DB');
+		 			   $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text('');
+		 			   $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').trigger('click');
+		 			   $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').focus();
+		 		   }else{
+		 				  sumarColumnaImporte();
+				 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').trigger('click');
+				 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').focus();
+				 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').val('');			 			
+		 		   }
 		 	   });
    }
    function ejecutarCantidad(cantidad, indiceFila){
@@ -569,6 +701,7 @@
    function cargarDatosNit(nit){
 	   $.post('InformacionNit',{nit : nit} ,function(responseJson) {
 		   if(responseJson!=null){
+			   $('#codigoCliente').text('');
 			   $.each(responseJson, function(key, value) {
 					$('#nit').val(value['nit']);
 					$('#nombre').val(value['nombreCliente']);
@@ -581,7 +714,11 @@
 					$('#saldoCliente').text(value['saldo']);
 			    });
 		   }
-				   
+		   if($('#codigoCliente').text()==''){
+			   alert('EL NIT ES INCORRECTO O NO EXISTE EN LA DB.');
+			   $('#nit').val('');
+			   $('#nit').focus();
+		   }
 	   });
    }
    //funcion cargar datos del tipo documento
@@ -617,8 +754,7 @@
 					    	 
 					     }
 					  });
-					$('#ocultarSuperior').trigger('click');
-					$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').trigger('dblclick');
+					$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').trigger('click');
 			    });
 		   }
 				   
@@ -637,33 +773,45 @@
 	   });
    }
    //Autorizaciones varias
-   function autorizarDocumento(noDoc){
-	   var autorizado = false;
-	   $.post('Autorizaciones',{opcion : noDoc} ,function(responseText) {
-		   if(responseText!=null){
-			   if(parseInt(responseText)==1){
-				   autorizado = true;
-			   }else{
-				   false
-			   }
-		   }
-				   
-	   });
-	   return autorizado;
-   }
+//   function autorizarDocumento(noDoc){
+//	   var autorizado = false;
+//	   $.post('Autorizaciones',{opcion : noDoc} ,function(responseText) {
+//		   if(responseText!=null){
+//			   if(parseInt(responseText)==1){
+//				   autorizado = true;
+//			   }else{
+//				   false
+//			   }
+//		   }
+//				   
+//	   });
+//	   return autorizado;
+//   }
    
  //Autorizar tipo documento
-   function autorizarDocumento(noDoc){
-	   $.post('Autorizaciones',{opcion : noDoc} ,function(responseText) {
+   function autorizarDocumento(operacion, usuario, clave){
+	   var respuesta;
+	   console.log('v1' + operacion + ' v2 ' + usuario + ' v3 ' + clave);
+	   $.post('Privilegios',{operacion : operacion, usuario : usuario, pass : clave} ,function(responseText) {
 		   if(responseText!=null){
+			   console.log('Hay respuesta ' + responseText);
 			   if(parseInt(responseText)==1){
-				   cargarDatosDoc(1, noDoc);
-				   $('#autorizar').modal('toggle');
-			   }else{
-				   ('#notificacion').text(responseText);
+				   $('#permiso').text(responseText);
+				   console.log(responseText);
+				   if(operacion == 7){
+					   console.log('ejecutar cantidad');
+				   }
+//				   cargarDatosDoc(1, noDoc);
+//				   $('#autorizar').modal('toggle');
+			   }else if(parseInt(responseText)==0){
+				   $('#permiso').text(responseText);
+				   console.log(responseText);
+				   if(operacion == 7){
+					   console.log('regreso a celda de porcentaje');
+				   }
+//				   ('#notificacion').text(responseText);
 			   }
 		   }
-				   
 	   });
    }
    function separarTexto(posicion, texto){
@@ -729,43 +877,53 @@
 		       var thead = $("<thead></thead>");
 		       var tbody = $("<tbody></tbody>");
 		       var encabezado = $("<tr> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th>  <th></th> <th></th> <th></th> <th></th> </tr>");
-		       encabezado.children().eq(0).text("Código");
-		       encabezado.children().eq(1).text("Descripcion");
-		       encabezado.children().eq(2).text("Marca");
-		       encabezado.children().eq(3).text("Precio U");
-		       encabezado.children().eq(4).text("Disponible");
-		       encabezado.children().eq(5).text("Bodega");
-		       encabezado.children().eq(6).text("Back Order");
-		       encabezado.children().eq(7).text("Fecha Espera");
-		       encabezado.children().eq(8).text('Tránsito');
+		       encabezado.children().eq(0).text("Codigo");
+		       encabezado.children().eq(1).text("Disp.");
+		       encabezado.children().eq(2).text("Bod.");
+		       encabezado.children().eq(3).text("Precio");
+		       encabezado.children().eq(4).text("Marca");
+		       encabezado.children().eq(5).text("Descripcion");
+		       encabezado.children().eq(6).text("B. O.");
+		       encabezado.children().eq(7).text('Fecha Esp.');
+		       encabezado.children().eq(8).text('Tr&aacute;nsito');
 		       encabezado.children().eq(9).text("Familia");
-		       encabezado.children().eq(10).text("referencia");
+		       encabezado.children().eq(10).text("Referencia");
 		       encabezado.appendTo(thead);
 		       tabla.appendTo(contenedor);
 		       thead.appendTo(tabla);
 		       tbody.appendTo(tabla);
 		       $.each(responseJson, function(key,value) {
-		            var rowNew = $("<tr> <td><a href='#'></a></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr>");
-		               rowNew.children().children().eq(0).text(value['codigoProducto']);
-		               rowNew.children().eq(1).text(value['descripcionProducto']);
-		               rowNew.children().eq(2).text(value['marcaProducto']);
-		               rowNew.children().eq(3).text(value['precioProducto']);
-		               rowNew.children().eq(4).text(parseInt(value['disponible']));
-		               rowNew.children().eq(5).text(value['bodegaProducto']);
-		               rowNew.children().eq(6).text(parseInt(value['backOrder']));
+		            var rowNew = $("<tr> <td class='buscaProdCod'></td> <td class='buscaProdDisponible text-center'></td> <td class='buscaProdBodega text-center'></td> <td class='buscaProdPrecio text-center'></td> <td class='buscaProdMarca'></td> <td class='buscaProdDescripcion'></td> <td class='buscaProdBack'></td> <td class='buscaProdFecha'></td> <td class='buscaProdTransito'></td> <td class='buscaProdFamilia'></td> <td class='buscaProdReferencia'></td> </tr>");
+		               rowNew.find('.buscaProdCod').text($.trim(value['codigoProducto']));
+		               rowNew.find('.buscaProdDescripcion').text(value['descripcionProducto']);
+		               rowNew.find('.buscaProdMarca').text(value['marcaProducto']);
+		               rowNew.find('.buscaProdPrecio').text(value['precioProducto']);
+		               rowNew.find('.buscaProdDisponible').text(parseInt(value['disponible']));
+		               rowNew.find('.buscaProdBodega').text(value['bodegaProducto']);
+		               rowNew.find('.buscaProdBack').text(parseInt(value['backOrder']));
 //		               if(typeof value['fechaespera'] == 'undefined'){
 //		            	   rowNew.children().eq(7).text('N/A');
 //		               }else{
-		            	   rowNew.children().eq(7).text(value['fechaespera']);
+		            	   rowNew.find('.buscaProdFecha').text(value['fechaespera']);
 //		               }
-		               rowNew.children().eq(8).text(value['transito']);
-		               rowNew.children().eq(9).text(value['familiaProducto']);
-		               rowNew.children().eq(10).text(value['referenciaProducto']);
+		               rowNew.find('.buscaProdTransito').text(value['transito']);
+		               rowNew.find('.buscaProdFamilia').text(value['familiaProducto']);
+		               rowNew.find('.buscaProdReferencia').text(value['referenciaProducto']);
 		               rowNew.appendTo($('table#tablaProductos tbody'));
 		       });
 		       $("#tablaProductos").dataTable( {
 		    	   "columnDefs": [
-			                       { "width": "200%", "targets": 1 }
+									{ "width": "100px", "targets": 0 },
+									{ "width": "25px", "targets": 1 },
+									{ "width": "25px", "targets": 2 },
+									{ "width": "25px", "targets": 3 },
+									{ "width": "100px", "targets": 4 },
+									{ "width": "400px", "targets": 5 },
+									{ "width": "100px", "targets": 6 },
+									{ "width": "100px", "targets": 7 },
+									{ "width": "100px", "targets": 8 },
+									{ "width": "100px", "targets": 9 },
+									{ "width": "100px", "targets": 10 }
 			                     ],
 		    	   "scrollY" : 200,
 		    	   "scrollX" : true,
@@ -787,13 +945,13 @@
 			   var tabla = $("<table id='tablaProductosBodega' class='table table-striped table-bordered table-condensed table-hover'></table>");
 		       var thead = $("<thead></thead>");
 		       var tbody = $("<tbody></tbody>");
-		       var encabezado = $("<tr> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> </tr>");
+		       var encabezado = $("<tr style='background-color: #0088CC; color: #ffffff;'> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> </tr>");
 		       encabezado.children().eq(0).text("Codigo");
-		       encabezado.children().eq(1).text("Descripcion");
-		       encabezado.children().eq(2).text("Marca");
-		       encabezado.children().eq(3).text("Precio U");
-		       encabezado.children().eq(4).text("Disponible");
-		       encabezado.children().eq(5).text("Bodega");
+		       encabezado.children().eq(1).text("Disp.");
+		       encabezado.children().eq(2).text("Bod.");
+		       encabezado.children().eq(3).text("Precio");
+		       encabezado.children().eq(4).text("Marca");
+		       encabezado.children().eq(5).text("Descripcion");
 		       encabezado.children().eq(6).text("Familia");
 		       encabezado.children().eq(7).text("Referencia");
 		       encabezado.appendTo(thead);
@@ -801,20 +959,28 @@
 		       thead.appendTo(tabla);
 		       tbody.appendTo(tabla);
 		       $.each(responseJson, function(key,value) {
-		            var rowNew = $("<tr> <td><a href='#'></a></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr>");
-		               rowNew.children().children().eq(0).text(value['codigoProducto']);
-		               rowNew.children().eq(1).text(value['descripcionProducto']);
-		               rowNew.children().eq(2).text(value['marcaProducto']);
-		               rowNew.children().eq(3).text(value['precioProducto']);
-		               rowNew.children().eq(4).text(parseInt(value['disponible']));
-		               rowNew.children().eq(5).text(value['bodegaProducto']);
-		               rowNew.children().eq(6).text(value['familiaProducto']);
-		               rowNew.children().eq(7).text(value['referenciaProducto']);
+		            var rowNew = $("<tr> <td class='xBodegasProducto'></td> <td class='xBodegasDisponible text-center'></td> <td class='xBodegasBodega text-center'></td> <td class='xBodegasPrecio text-center'></td> <td class='xBodegasMarca'></td> <td class='xBodegasDescripcion'></td> <td class='xBodegasFamilia'></td> <td class='xBodegasReferencia'></td> </tr>");
+		               rowNew.find('.xBodegasProducto').text($.trim(value['codigoProducto']));
+		               rowNew.find('.xBodegasDescripcion').text(value['descripcionProducto']);
+		               rowNew.find('.xBodegasMarca').text(value['marcaProducto']);
+		               rowNew.find('.xBodegasPrecio').text(value['precioProducto']);
+		               rowNew.find('.xBodegasDisponible').text(parseInt(value['disponible']));
+		               rowNew.find('.xBodegasBodega').text(value['bodegaProducto']);
+		               rowNew.find('.xBodegasFamilia').text(value['familiaProducto']);
+		               rowNew.find('.xBodegasReferencia').text(value['referenciaProducto']);
 		               rowNew.appendTo($('table#tablaProductosBodega tbody'));
 		       });
 		       $("#tablaProductosBodega").dataTable( {
 		    	   "columnDefs": [
-			                       { "width": "200%", "targets": 1 }
+
+			                       { "width": "100px", "targets": 0 },
+			                       { "width": "25px", "targets": 1 },
+			                       { "width": "25px", "targets": 2 },
+			                       { "width": "25px", "targets": 3 },
+			                       { "width": "100px", "targets": 4 },
+			                       { "width": "350px", "targets": 5 },
+			                       { "width": "100px", "targets": 6 },
+			                       { "width": "100px", "targets": 7 }
 			                     ],
 		    	   "scrollY" : 200,
 		    	   "scrollX" : true,
@@ -984,6 +1150,7 @@
     function agregarFila(){
     	var filaNueva = $(
 	   			'<tr>' +
+	   				'<td class="verInfoProd"><span class="glyphicon glyphicon-minus text-danger borrar" aria-hidden="true">    </span><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></td>'+
             		'<td class="codigoProducto"></td>'+
             		'<td class="medida"></td>'+
             		'<td class="descripcion"><div class="contenDescrip"></div></td>'+
@@ -1000,23 +1167,85 @@
             		'<td class="kit"></td>'+
         		'</tr>'
 	   	 );
-	   	 
+    	
+    	//agregando la fila y ocultando la celda de kit.
 	   	 filaNueva.prependTo(('#datosVarios > tbody'));
 	   	 $('.kit').hide();
-	   	$('.codigoProducto').editable(function(value, settings) {
-			   $('#indice').text($(this).parent().index());
-			     return(value);
-			  }, {
-			     onblur  : 'cancel',
-			     style   : 'inherit',
-			     callback : function(value, settings) {
-			    	 traerProducto(value, separarTexto(0, $('#fPago').val()), $('#codigoLista').text() ,$('#indice').text());
-			    	 
-			    	 
-			     }
-			  });
-	   	$('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').trigger('click');
-	   	$('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').focus();
+    }
+    function encontrarImagen(indice){
+    	console.log('Indice de Fila' + indice)
+    	if($('#datosVarios > tbody > tr').eq(indice).find('.codigoProducto').text() == ''){
+    		alert('Debe ingresar un producto antes de poder ver su imagen o pdf');
+    	}else{
+    		console.log('CodigoProducto: ' + $('#datosVarios > tbody > tr').eq(indice).find('.codigoProducto').text());
+    		$.post('BuscarImagen',{
+    			
+    			codigoProducto : $('#datosVarios > tbody > tr').eq(indice).find('.codigoProducto').text()
+			   } ,function(responseText) {
+				   if(responseText!=null){
+					   if(responseText==''){
+						   var imagen = document.getElementById('imgProducto');
+				     	   imagen.src = 'imagenes/noImage.png';
+				     	   $('#infoProducto').modal('toggle');
+						   console.log('No existe imagen.');
+					   }else{
+						   var imagen = document.getElementById('imgProducto');
+						   console.log($.trim(responseText));
+						   var ruta = 'imagenes/';
+				     	   imagen.src = ruta.concat($.trim(responseText));
+				     	   $('#infoProducto').modal('toggle');
+					   }
+					   
+				   }   
+			   });
+    		
+    	}
+    }
+    function ejecutarPorcentaje(porcentaje, indice){
+    	if(porcentaje > 100 ){
+            alert('El porcentaje de descuento no puede ser mayor a 100 ');
+        }else if(porcentaje > $('#datosVarios > tbody > tr').eq(indice).find('.dm').text()){
+            $('#autorizar').modal('toggle');
+            $('#permisosUsuario').val('');
+            $('#permisosClave').val('');
+            $('#opcionPermisos').text('6');
+            $('#permisosUsuario').focus();
+            
+        }
+    }
+    function hacerCamposEditables(){
+    	$('.codigoProducto').editable(function(value, settings) {
+		     return(value);
+		  }, {
+		     onblur  : 'cancel',
+		     event   : 'click',
+		     style   : 'inherit',
+		     callback : function(value, settings) {
+		    	 traerProducto(value, separarTexto(0, $('#fPago').val()), $('#codigoLista').text() ,$('#indice').text());
+		    	 
+		     }
+		  });
+    	$('.cantidad').editable(function(value, settings) {
+		     return(value);
+		  }, {
+		     onblur  : 'cancel',
+		     event   : 'click',
+		     style   : 'inherit',
+		     callback : function(value, settings) {
+		    	 
+		    	 ejecutarCantidad(value, $('#indice').text());
+		     }
+		  });
+  	$('.porcentaje').editable(function(value, settings) {
+		     return(value);
+		  }, {
+		     onblur  : 'cancel',
+		     event   : 'click',
+		     style   : 'inherit',
+		     callback : function(value, settings) {
+		    	 ejecutarPorcentaje(value, $('#indice').text());
+		     }
+		  });
     }
     
   }(window.jQuery, window, document));

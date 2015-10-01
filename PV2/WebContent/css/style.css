@@ -54,11 +54,18 @@ body {
    height: 100%;
    width: 100%;*/
    max-width: inherit;
-   max-height: inherit;
-   overflow: hidden;
+   max-height: 20px;
+   overflow-x: hidden;
+   line-height:20px;
+}
+.descripcion{
+	overflow: hidden;
 }
 #datosVarios{
 	font-size: small;
+}
+#datosVarios tbody tr:hover{
+	background-color: #ffff4c;
 }
 /***
 #datosVarios tbody tr td:nth-child(3){

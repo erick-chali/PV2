@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.im.puntoventa.conexion.NombreDB;
 import com.im.puntoventa.dao.ImplementaLogin;
 import com.im.puntoventa.dao.InterLogin;
 import com.im.puntoventa.datos.DatosLogin;
@@ -54,6 +55,9 @@ public class Login extends HttpServlet {
 		datos = interfaz.validaUsuario(datos);
 		
 		if(datos.getRespuesta()==1){
+			String nombres = null;
+			NombreDB nombreDB = new NombreDB();
+			nombres = nombreDB.obtenerNombreDb();
 			sesion.setAttribute("sucursal", datos.getSucursal());
 			sesion.setAttribute("codSucursal", datos.getCodSucursal());
 			String textoSucursal = (String) sesion.getAttribute("sucursal");
@@ -64,6 +68,7 @@ public class Login extends HttpServlet {
 			sesion.setAttribute("codigoVendedor", datos.getCodigoVendedor());
 			sesion.setAttribute("nombreEmpresa", datos.getNombreEmpresa());
 			sesion.setAttribute("moneda", datos.getMoneda());
+			sesion.setAttribute("nombreDB", nombres);
 			sesion.setMaxInactiveInterval(30*30);
 			
 			response.sendRedirect("pv.jsp");

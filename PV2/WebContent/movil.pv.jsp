@@ -12,7 +12,7 @@
         <link type="text/css" rel="stylesheet" href="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css">
         <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
         <link type="text/css" rel="stylesheet" href="css/pushy.css">
-        <link type="text/css" rel="stylesheet" href="css/style.css">
+        <link type="text/css" rel="stylesheet" href="css/styleMovil.css">
     </head>
     <body>
     
@@ -24,35 +24,7 @@
             </ul>
         </nav>
         <div class="site-overlay"></div>
-    <!-- Fixed navbar -->
-    <!--  
-    <nav class="navbar navbar-inverse navbar-fixed-top" id="barraNavegacion">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="pv.jsp">Punto venta</a></li>
-            <li><a href="datoscliente.jsp">Ingreso Datos Cliente</a></li>
-            <li><a href="">Cambio Tipo Cliente</a></li>
-            <li><a href="">Cambio Vendedor</a></li>
-            
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-          	<li></li>
-            <li><a href="Logout"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Cerrar Sesion</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    -->
-    <!-- FIXED NAVBAR -->
+    
     <div id="container">
         <div class="panel panel-default">
                 <div class="panel-body">
@@ -88,7 +60,7 @@
                         <div class="col-sm-2 col-md-2">
                                 
                             <div class="input-group" id="divFormaPago">
-                                <input type="text" class="form-control input-sm" placeholder="Forma Pago" id="fPago">
+                                <input type="text" class="form-control input-sm"  id="fPago">
                                 <span class="input-group-btn">
                                     <button class="btn btn-primary btn-sm" type="button" id="f1">F1</button>
                                 </span>
@@ -112,7 +84,7 @@
                             
                             <div class="input-group">
                             	<span class="input-group-addon">${moneda}</span>
-                                <input type="text" class="form-control input-sm" placeholder="Limite de Cr&eacute;dito" id="lCredito" disabled>
+                                <input type="text" class="form-control input-sm" id="lCredito" disabled>
                                 <span class="input-group-btn">
                                     <button class="btn btn-primary btn-sm" type="button" id="exp">
                                     	<span class="glyphicon glyphicon-export" aria-hidden="true"></span>
@@ -126,10 +98,11 @@
 
                     	<!-- <div class="table-responsive" id="contenedorDatosVarios"> -->
                     	
-						<table id="datosVarios" class="table table-striped table-condensed table-bordered table-hover">
+                    	<div style="overflow:scroll; width:100%;" >
+                    		<table id="datosVarios" class="table table-striped table-condensed table-bordered table-hover">
 	                    <thead>
 	                    	<tr style="background-color: #0088CC; color: #ffffff;">
-	                    		
+	                    		<th style="width: 75px;"> </th>
 	                    		<th style="width: 75px;">Cod. Prod.</th>
 	                    		<th style="width: 50px;">U. M.</th>
 	                    		<th style="width: 250px;">Descripcion</th>
@@ -149,6 +122,7 @@
 	                    </thead>
 	                    <tbody>
 	                    	<tr>
+	                    		<td class="verInfoProd"><span class="glyphicon glyphicon-minus text-danger borrar" aria-hidden="true"></span><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></td>
 	                    		<td class="codigoProducto"></td>
 	                    		<td class="medida"></td>
 	                    		<td class="descripcion"><div class="contenDescrip"></div></td>
@@ -166,6 +140,8 @@
 	                    	</tr>
 	                    </tbody>
                     </table>
+                    	</div>
+						
                     	
                     	<!--</div>  -->
                     	<h5 class="text-right" id="subTotal">SubTotal: 0.00</h5>
@@ -186,7 +162,7 @@
                     	</div>
                         <div class="col-sm-2 col-md-2">
 		                    	<div class="input-group">
-		                        	<input type="text" class="form-control input-sm" placeholder="Tipo Documento" id="tDoc">
+		                        	<input type="text" class="form-control input-sm" id="tDoc">
 		                           	<span class="input-group-btn">
 		                            	<button class="btn btn-primary btn-sm" type="button" id="f2">F2</button>
 		                           	</span>
@@ -197,7 +173,7 @@
                     	</div>
                         <div class="col-sm-2 col-md-2">
                             <div class="input-group">
-                                <input type="text" class="form-control input-sm" placeholder="No. Documento" id="nDoc">
+                                <input type="text" class="form-control input-sm" id="nDoc">
                                 <span class="input-group-btn">
                                     <button class="btn btn-primary btn-sm" type="button" id="f3">F3</button>
                                 </span>
@@ -225,7 +201,7 @@
                         </div>
                         <div class="col-sm-2 col-md-2">
                             <div class="input-group">
-                                <input type="text" class="form-control input-sm" placeholder="NIT" id="nit">
+                                <input type="text" class="form-control input-sm" id="nit">
                                 <span class="input-group-btn">
                                     <button class="btn btn-primary btn-sm" type="button" id="f4">F4</button>
                                 </span>
@@ -235,20 +211,20 @@
                         	<h6 style="color: #c12929;">Nombre</h6>
                         </div>
                         <div class="col-sm-2 col-md-2">
-                            <input type="text" class="form-control input-sm" id="nombre" placeholder="Nombre Cliente">     
+                            <input type="text" class="form-control input-sm" id="nombre">     
                         </div>
                         
                         <div class="col-sm-1 col-md-1">
                         	<h6 style="color: #c12929;">Direc. Fac.</h6>
                         </div>
                         <div class="col-sm-2 col-md-2">
-                            <input class="form-control input-sm" type="text" id="direcF" placeholder="Dirección Factura">
+                            <input class="form-control input-sm" type="text" id="direcF" >
                         </div>
                         <div class="col-sm-1 col-md-1">
                         	<h6 style="color: #c12929;">Direc. Env.</h6>
                         </div>
                         <div class="col-sm-2 col-md-2">
-                            <input class="form-control input-sm" type="text" id="direcE" placeholder="Dirección Envío">
+                            <input class="form-control input-sm" type="text" id="direcE">
                         </div>
                     </div><!--fin de fila-->
                     
@@ -257,13 +233,13 @@
                     		<h6 style="color: #c12929;">Teléfono</h6>
                     	</div>
                         <div class="col-sm-2 col-md-2">
-                            <input type="tel" class="form-control input sm" id="telefono" placeholder="Teléfono">
+                            <input type="tel" class="form-control input sm" id="telefono" >
                         </div>
                         <div class="col-sm-1 col-md-1">
                     		<h6 style="color: #c12929;">Tarjeta</h6>
                     	</div>
                         <div class="col-sm-2 col-md-2">
-                            <input type="text" class="form-control input-sm" id="tarjeta" placeholder="Tarjeta" >     
+                            <input type="text" class="form-control input-sm" id="tarjeta" >     
                         </div>
                         
                         
@@ -496,6 +472,46 @@
 		    </div>
 		  </div>
 		</div><!-- FIN DE MODAL -->
+		
+		<!-- Modal BUSQUEDA INFORMACION PRODUCTO -->
+		<div id="infoProducto" class="modal" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="true" tabindex="-1">
+		  <div class="modal-dialog">
+		    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		      	<button type="button" class="close" data-dismiss="modal">&times;</button>
+		        <h4 class="modal-title" id="tituloModalKit">Informaci&oacute;n de Producto</h4>
+		      </div>
+		      <div class="modal-body">
+		      	
+		      	<ul class="nav nav-tabs">
+				  <li class="active"><a data-toggle="tab" href="#imagenProducto">Imagen</a></li>
+				  <li><a data-toggle="tab" href="#menu1">Caracter&iacute;sticas</a></li>
+				</ul>
+
+				<div class="tab-content">
+				  <div id="imagenProducto" class="tab-pane fade in active">
+				  	<div class="row">
+					  <div class="col-xs-6 col-sm-6 col-md-6">
+					    <a href="" class="thumbnail">
+					      <img id="imgProducto">
+					    </a>
+					  </div>
+					</div>
+				  </div>
+				  <div id="menu1" class="tab-pane fade">
+				  	<embed src="pdf/prueba.pdf" width="600" height="500" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html">
+				  </div>
+				</div>
+		        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="margin-top: 10px;" id="cancelar">Cerrar</button>
+		      </div>
+		      <div class="modal-footer">
+		      	<p id="notificacion" class="text-danger"></p>
+		      </div>
+		    </div>
+		  </div>
+		</div><!-- FIN DE MODAL -->
+		
 		</div>
     <script type="text/javascript" src="js/jquery-1.5.min.js"></script>
 	<script type="text/javascript">
@@ -508,7 +524,7 @@
 	<script src="js/BeatPicker.min.js"></script>
 	<script src="js/jquery.freezeheader.js"></script>
 	<script src="js/pushy.min.js"></script>
-	<script src="js/script.js"></script>
+	<script src="js/scriptMovil.js"></script>
 	<script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
 	<script src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 	

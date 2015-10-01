@@ -86,8 +86,19 @@ public class ImplementaDatosEnc implements InterfazDatosEnc{
 				rs = stmt.executeQuery();
 				
 				while(rs.next()){
+					if(rs.getString(1)!=null){
+						datos.setSerieEnc(rs.getString(1));
+					}else{
+						datos.setSerieEnc("NA");
+					}
 					datos.setNoEnc(rs.getString(2));
-					documento = rs.getInt(2);
+//					if(rs.getString(1)!=null){
+//						datos.setSerieEnc(rs.getString(1));
+//					}else{
+//						datos.setSerieEnc("NA");
+//					}
+//					datos.setNoEnc(rs.getString(2));
+//					documento = rs.getInt(2);
 				}
 				con.close();
 				stmt.close();
@@ -109,30 +120,32 @@ public class ImplementaDatosEnc implements InterfazDatosEnc{
 //			stmt.close();
 //			rs.close();
 			
-			con = new ConectarDB().getConnection();
-			stmt = con.prepareCall("{call stp_udpv_VerificaCotiza(?,?)}");
-			stmt.setString(1, "");
-			stmt.setInt(2, documento);
-			rs = stmt.executeQuery();
-			
-			while(rs.next()){
-				System.out.println(rs.getString("error"));
-			}
-			con.close();
-			stmt.close();
-			rs.close();
+//			con = new ConectarDB().getConnection();
+//			stmt = con.prepareCall("{call stp_udpv_VerificaCotiza(?,?)}");
+//			stmt.setString(1, "");
+//			stmt.setInt(2, documento);
+//			rs = stmt.executeQuery();
+//			
+//			while(rs.next()){
+//				System.out.println(rs.getString("error"));
+//			}
+//			con.close();
+//			stmt.close();
+//			rs.close();
 			
 		}catch(SQLException e ){
 			System.out.println("Error Enc: " + e.getMessage());
-			e.printStackTrace();
 		}
 		return datos;
 	}
 	
-	public static ArrayList<DatosEnc> obtenerDocumento(){
+	public static ArrayList<DatosEnc> obtenerDocumento(String serie, String numero){
 		
+		@SuppressWarnings("unused")
+		DatosEnc data = null;
+		data = new DatosEnc();
+		ArrayList<DatosEnc> lista = new ArrayList<DatosEnc>();
 		
-		
-		return null;
+		return lista;
 	}
 }

@@ -2,6 +2,10 @@ package com.im.puntoventa.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,9 +13,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.im.puntoventa.dao.ImplementaDatosDet;
-import com.im.puntoventa.dao.InterfazDatosDet;
-import com.im.puntoventa.datos.DatosDet;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.im.puntoventa.conexion.ConectarDB;
 
 /**
  * Servlet implementation class IngresarDet
@@ -27,72 +32,83 @@ public class IngresarDet extends HttpServlet {
         super();
         // TODO Auto-generated constructor stub
     }
+    
+	/* (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+//		doPost(req, resp);
+	}
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		DatosDet datos = null;
-		InterfazDatosDet interfaz = new ImplementaDatosDet();
+		int registros = 0;
+		request.getSession().setAttribute("datosTabla", request.getParameter("datos"));
+		JsonParser parser = new JsonParser();
+		JsonElement arreglo = parser.parse((String)request.getSession().getAttribute("datosTabla"));
+		registros = arreglo.getAsJsonArray().size();
 		
-		request.getSession().setAttribute("tipoDoc", request.getParameter("tipoDocumento"));
-		request.getSession().setAttribute("serieDoc", request.getParameter("serieDocumento"));
-		request.getSession().setAttribute("numeroDocumento", request.getParameter("numeroDocumento"));
-		request.getSession().setAttribute("numCorrelativo", request.getParameter("numCorrelativo"));
-		request.getSession().setAttribute("codigoProducto", request.getParameter("codigoProducto"));
-		request.getSession().setAttribute("UMedida", request.getParameter("UMedida"));
-		request.getSession().setAttribute("cantidad", request.getParameter("cantidad"));
-		request.getSession().setAttribute("precio", request.getParameter("precio"));
-		request.getSession().setAttribute("porDescuento", request.getParameter("porDescuento"));
-		request.getSession().setAttribute("descuento", request.getParameter("descuento"));
-		request.getSession().setAttribute("total", request.getParameter("total"));
-		request.getSession().setAttribute("codigoCliente", request.getParameter("codigoCliente"));
-		request.getSession().setAttribute("promo", request.getParameter("promo"));
-		request.getSession().setAttribute("bodega", request.getParameter("bodega"));
-		request.getSession().setAttribute("envio", request.getParameter("envio"));
-		request.getSession().setAttribute("observaciones", request.getParameter("observaciones"));
-		request.getSession().setAttribute("lista", request.getParameter("lista"));
-		request.getSession().setAttribute("pago", request.getParameter("pago"));
-		request.getSession().setAttribute("kit", request.getParameter("kit"));
-		request.getSession().setAttribute("corrKit", request.getParameter("corrKit"));
-		request.getSession().setAttribute("codPromo", request.getParameter("codPromo"));
-		request.getSession().setAttribute("serieDevProy", request.getParameter("serieDevProy"));
-		request.getSession().setAttribute("numDevProy", request.getParameter("numDevProy"));
-		request.getSession().setAttribute("ordenCompra", request.getParameter("ordenCompra"));
-		
-		datos = new DatosDet();
-		datos.setTipoDoc((String)request.getSession().getAttribute("tipoDoc"));
-		datos.setSerieDoc((String)request.getSession().getAttribute("serieDoc"));
-		datos.setNoDoc((String)request.getSession().getAttribute("numeroDocumento"));
-		datos.setCorrelativo((String)request.getSession().getAttribute("numCorrelativo"));
-		datos.setCodigoProducto((String)request.getSession().getAttribute("codigoProducto"));
-		datos.setuMedida((String)request.getSession().getAttribute("UMedida"));
-		datos.setCantidad((String)request.getSession().getAttribute("cantidad"));
-		datos.setPrecio((String)request.getSession().getAttribute("precio"));
-		datos.setPorDescuento((String)request.getSession().getAttribute("porDescuento"));
-		datos.setDescuento((String)request.getSession().getAttribute("descuento"));
-		datos.setTotal((String)request.getSession().getAttribute("total"));
-		datos.setCodigoCliente((String)request.getSession().getAttribute("codigoCliente"));
-		datos.setPromo((String)request.getSession().getAttribute("promo"));
-		datos.setBodega((String)request.getSession().getAttribute("bodega"));
-		datos.setEnvia((String)request.getSession().getAttribute("envio"));
-		datos.setObservaciones((String)request.getSession().getAttribute("observaciones"));
-		datos.setLista((String)request.getSession().getAttribute("lista"));
-		datos.setPago((String)request.getSession().getAttribute("pago"));
-		datos.setKit((String)request.getSession().getAttribute("kit"));
-		datos.setCorrKit((String)request.getSession().getAttribute("corrKit"));
-		datos.setCodPromo((String)request.getSession().getAttribute("codPromo"));
-		datos.setSerieDevProy((String)request.getSession().getAttribute("serieDevProy"));
-		datos.setNumeroDevProy((String)request.getSession().getAttribute("numDevProy"));
-		datos.setOrdenCompra((String)request.getSession().getAttribute("ordenCompra"));
-		
-		datos  = interfaz.obtenerDatos(datos);
-		
-		if(datos.getMensaje()!=null){
-			response.setContentType("text/html");
-			PrintWriter resp = response.getWriter();
-			resp.println(datos.getMensaje());
+		for(int x =0; x < registros; x++){
+			Connection con = null;
+			CallableStatement stmt = null;
+			ResultSet rs = null;
+			String unidad;
+			unidad = null;
+			try{
+				con = new ConectarDB().getConnection();
+				stmt = con.prepareCall("{call stp_obtenerMedida(?,?)}");
+				stmt.setString(1, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("codigoProducto").getAsString());
+				stmt.setInt(2, 1);
+				rs = stmt.executeQuery();
+				while(rs.next()){
+					unidad = rs.getString("unidad_medida");
+				}
+				rs = null;
+				con = new ConectarDB().getConnection();
+				stmt = con.prepareCall("{call stp_UDPV_InUp_Mov_Det(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+				stmt.setInt(1, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("tipoDocumento").getAsInt());
+				stmt.setString(2, (String) request.getSession().getAttribute("serieDoc"));
+				stmt.setString(3, (String)request.getSession().getAttribute("numeroDocumento"));
+				stmt.setInt(4, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("correlativo").getAsInt());
+				stmt.setString(5, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("codigoProducto").getAsString());
+				stmt.setString(6, unidad);
+				stmt.setInt(7, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("cantidad").getAsInt());
+				stmt.setString(8, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("precio").getAsString());
+				stmt.setString(9, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("porcentaje").getAsString());
+				stmt.setString(10, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("descuento").getAsString());
+				stmt.setString(11, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("importe").getAsString());
+				stmt.setInt(12, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("codigoCliente").getAsInt());
+				stmt.setInt(13, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("promo").getAsInt());
+				stmt.setString(14, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("bodega").getAsString());
+				stmt.setInt(15, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("envio").getAsInt());
+				stmt.setString(16, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("observaciones").getAsString());
+				stmt.setInt(17, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("lista").getAsInt());
+				stmt.setInt(18, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("pago").getAsInt());
+				stmt.setString(19, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("kit").getAsString());
+				stmt.setInt(20, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("corrKit").getAsInt());
+				stmt.setInt(21, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("codPromo").getAsInt());
+				stmt.setString(22, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("serieDevProy").getAsString());
+				stmt.setString(23, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("numDevProy").getAsString());
+				stmt.setInt(24, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("ordenCompra").getAsInt());
+				rs = stmt.executeQuery();
+				
+				while(rs.next()){
+					PrintWriter respuesta = response.getWriter();
+					respuesta.println("Guardados " + arreglo.getAsJsonArray().size() + " registros en el documento: " + (String)request.getSession().getAttribute("numeroDocumento"));
+				}
+			}catch(SQLException e ){
+				PrintWriter respuesta = response.getWriter();
+				respuesta.print("Error al ingresar producto " +arreglo.getAsJsonArray().get(x).getAsJsonObject().get("codigoProducto").getAsString()+" a documento: " + e.getMessage());
+			}
+			
 		}
+		
+		
 	}
 
 }

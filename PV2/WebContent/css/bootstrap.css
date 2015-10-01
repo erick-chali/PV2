@@ -11,8 +11,8 @@ html {
       -ms-text-size-adjust: 100%;
 }
 body {
-  width: 98%;
-  margin-top: 20px;
+  margin: 0;
+  padding: 0;
 }
 article,
 aside,
@@ -1150,8 +1150,8 @@ img {
   border-radius: 50%;
 }
 hr {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 3px;
+  margin-bottom: 3px;
   border: 0;
   border-top: 1px solid #eee;
 }

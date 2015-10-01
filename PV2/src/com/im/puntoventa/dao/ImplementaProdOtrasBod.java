@@ -26,10 +26,14 @@ public class ImplementaProdOtrasBod implements InterfazProdOtrasBod{
 			stmt.setInt(2, Integer.parseInt(tipoPago));
 			stmt.setString(3, codigoProducto);
 			rs= stmt.executeQuery();
-			
+			System.out.println("Lista: " + lista);
+			System.out.println("pago: " + tipoPago);
+			System.out.println("producto: " + codigoProducto);
 			while(rs.next()){
+				System.out.println("Hay productos");
 				datos = new DatosProdOtrasBod();
 				datos.setCodigoProducto(rs.getString("Codigo"));
+				System.out.println(datos.getCodigoProducto());
 				datos.setDescripcionProducto(rs.getString("Descripcion"));
 				datos.setMarcaProducto(rs.getString("Marca"));
 				datos.setPrecioProducto(rs.getDouble("PrecioU"));
