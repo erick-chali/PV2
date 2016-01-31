@@ -11,6 +11,17 @@
 	  
     
     $(function () {
+    	$('#datosVarios').bootstrapTable();
+    	$(window).resize(function () {
+            $('#datosVarios').bootstrapTable('resetView');
+        });
+    	$tabla = $('#datosVarios');
+		   $tabla.bootstrapTable('insertRow', {
+            index: 1,
+            row: {
+                codigoProducto: '001101'
+            }
+        });
     	$.fn.capitalize = function () {
     	    $.each(this, function () {
     	        var split = this.value.split(' ');
@@ -30,7 +41,7 @@
     		    return val.toUpperCase();
     		  });
     		});
-    	$("#datosVarios").freezeHeader({ 'height': '450px' });
+//    	$("#datosVarios").freezeHeader({ 'height': '450px' });
     	$.get("http://ipinfo.io", function(response) {
     		console.log(response.ip);
     	    
@@ -39,7 +50,7 @@
 
     	if (device.match(/Iphone/i)|| device.match(/Ipod/i)|| device.match(/Android/i)|| device.match(/J2ME/i)|| device.match(/BlackBerry/i)|| device.match(/iPhone|iPad|iPod/i)|| device.match(/Opera Mini/i)|| device.match(/IEMobile/i)|| device.match(/Mobile/i)|| device.match(/Windows Phone/i)|| device.match(/windows mobile/i)|| device.match(/windows ce/i)|| device.match(/webOS/i)|| device.match(/palm/i)|| device.match(/bada/i)|| device.match(/series60/i)|| device.match(/nokia/i)|| device.match(/symbian/i)|| device.match(/HTC/i))
     	{
-    	window.location = "movil.pv.jsp";
+    	window.location = "m.pv.jsp";
 
     	}
     	else
@@ -47,11 +58,14 @@
     		console.log('Dispositivo Normal');
     	}
 	   var codigoP, descripcion, medida, cantidad, disponible, precioU, porDesc, descuento, importe, envio, dm, observ;
+
+	   
 	   var subTotal = 0;
 	   var Total;
 	   var temporal;
 	   var autorizado = 1;
 	   $('.correlativo').hide();
+	   $('.alternos').hide();
 	   $('#ocultarSuperior').click(function (){
 		   $('#parteSuperior').toggle('fast');
 	   });
@@ -90,13 +104,14 @@
 	   			$('#buscarProductos').modal('toggle');
            }else if(e.keyCode==119){
         	   encontrarImagen($('#indice').text());
-        	   
+           }else if(e.keyCode==120){
+        	   cargarAlternos();
            }
 	   });
 	   /**EVENTOS*/
 	   fechaActual();
 	   $('#fPago').focus();
-	   $('#toolbar').hide();
+//	   $('#toolbar').hide();
 	   $(document).on('focus', '#tDoc', function (){
 		   $(this).val('');
 	   }); 
@@ -189,7 +204,7 @@
 //				  });
 		   }
 	   });
-	   $(document).on('mouseover', '#datosVarios tbody tr', function (){
+	   $(document).on('click', '#datosVarios tbody tr', function (){
 		   $('#indice').text($(this).index());
 	   });
 	   $(document).on('click', '.cantidad', function (){
@@ -290,19 +305,26 @@
 	   });
 	   
 	   $('#agregarFila').click(function (e){
-		   var incompletos = 0 ;
-		   $('#datosVarios tbody tr').each(function (index){
-			   if($('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text()=='' || $('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text()=='--'){
-				   incompletos += Number(1);
-			   }
-		   });
-		   if(incompletos > 0){
-			   alert('No puede dejar una fila sin completar.');
-		   }else{
-			   agregarFila();
-			   hacerCamposEditables();
-			   $('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').trigger('dblclick');
-		   }
+//		   var incompletos = 0 ;
+//		   $('#datosVarios tbody tr').each(function (index){
+//			   if($('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text()=='' || $('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text()=='--'){
+//				   incompletos += Number(1);
+//			   }
+//		   });
+//		   if(incompletos > 0){
+//			   alert('No puede dejar una fila sin completar.');
+//		   }else{
+//			   agregarFila();
+//			   hacerCamposEditables();
+//			   $('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').trigger('dblclick');
+//		   }
+		   $tabla = $('#datosVarios');
+		   $tabla.bootstrapTable('insertRow', {
+               index: 1,
+               row: {
+                   codigoProducto: '001101'
+               }
+           });
 	   });
 	   
 	   $('#f3').click(function (e){
@@ -567,8 +589,9 @@
 	 		            		'<td class="dm" ></td>'+
 	 		            		'<td class="obser"></td>'+
 	 		            		'<td class="kit"></td>'+
+	 		            		'<td class="correlativo"></td>'+
+	 		            		'<td class="alternos"></td>'+
 	 		            	'</tr>');
-	 				  
 	 				  	rowNew.appendTo($('table#datosVarios tbody'));
 	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.codigoProducto').text(value['codigoProducto']);
 	 				  	console.log($.trim(value['codigoProducto']));
@@ -594,6 +617,8 @@
 		               
 	 			    });
 	 			  $('.kit').hide();
+	 			  $('.correlativo').hide();
+	 			  $('.alternos').hide();
 	 		   }
 	 				   
 	 	   });
@@ -805,7 +830,25 @@
 				 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').trigger('dblclick');
 				 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').val('');
 		 		   }
+		 		  $.ajax({
+					   type : 'POST',
+					   url : 'ProductosAlternos',
+					   dataType : 'html',
+					   data : {
+						   codigoProducto : $.trim($('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text())
+						   },
+				   success : function(data){
+					   if(data=="1"){
+						   $('#datosVarios > tbody > tr').eq(indiceFila).find('.alternos').text($.trim(data))
+						   alert('Hay producto alterno disponible, presionar F9 para verlo');
+					   }else{
+						   $('#datosVarios > tbody > tr').eq(indiceFila).find('.alternos').text($.trim(data))
+					   }
+				   } 
+				   });
 		 	   });
+        
+        
    }
    function ejecutarCantidad(cantidad, indiceFila){
 	   revisarCantidadMismoProducto($('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text(), cantidad, $('#indice').text());
@@ -1380,6 +1423,7 @@
             		'<td class="obser"></td>'+
             		'<td class="kit"></td>'+
             		'<td class="correlativo"></td>'+
+            		'<td class="alternos"></td>'+
         		'</tr>'
 	   	 );
     	
@@ -1387,6 +1431,7 @@
 	   	 filaNueva.prependTo(('#datosVarios > tbody'));
 	   	 $('.kit').hide();
 	   	 $('.correlativo').hide();
+	   	 $('.alternos').hide();
 	   	var numFilas = $('#datosVarios >tbody >tr').length;
 	   	var indice;
 	   	indice = 0;
@@ -1472,6 +1517,7 @@
 		    	 ejecutarCantidad(value, $('#indice').text());
 		     }
 		  });
+    	
   	$('.porcentaje').editable(function(value, settings) {
 		     return(value);
 		  }, {
@@ -1482,5 +1528,72 @@
 		    	 ejecutarPorcentaje(value, $('#indice').text());
 		     }
 		  });
+  	$('.obser').editable(function(value, settings) {
+	     return(value);
+	  }, {
+	     onblur  : 'cancel',
+	     event   : 'dblclick',
+	     style   : 'inherit',
+	     callback : function(value, settings) {
+	     }
+	  });
+
+    }
+    
+    function hacerBodegaEditable(){
+    	$('.bodega').editable(function(value, settings) {
+		     return(value);
+		  }, {
+		     onblur  : 'cancel',
+		     event   : 'dblclick',
+		     style   : 'inherit',
+		     callback : function(value, settings) {
+		    	 ejecutarPorcentaje(value, $('#indice').text());
+		     }
+		  });
+    }
+    function cargarAlternos(){
+    	if($('#datosVarios > tbody > tr').eq($('#indice').text()).find('.alternos').text()=="1"){
+    		$.ajax({
+ 			   type : 'POST',
+ 			   url : 'CargarAlternos',
+ 			   dataType : 'json',
+ 			   data : {
+ 				   codigoProducto : $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').text(),
+ 				   formaPago : separarTexto(0, $('#fPago').val()),
+ 				   lista : $('#codigoLista').text()
+ 			   },
+ 			   error : function(e){
+ 				   alert(e.responseText);
+ 			   },
+ 		   success : function(data){
+ 			   $('#contenedorAlternos').empty();
+ 			   
+ 			   var tabla = $('<table id="tablaAlternos" class="table table-striped table-bordered table-condensed table-hover"></table>');
+ 			   var thead = $('<thead></thead>');
+ 			   var detalle = $('<tbody></tbody>');
+ 			   var encabezado = $('<tr> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> </tr>');
+ 			   encabezado.children().eq(0).text('C\u00F3digo');
+ 			   encabezado.children().eq(1).text('Precio U.');
+ 			   encabezado.children().eq(2).text('Disponible');
+ 			   encabezado.children().eq(3).text('Bodega');
+ 			   encabezado.children().eq(4).text('Descripcion');
+ 			   encabezado.appendTo(thead);
+ 			   thead.appendTo(tabla);
+ 			   detalle.appendTo(tabla);
+ 			   tabla.appendTo('#contenedorAlternos');
+ 			   $.each(data, function(index, element) {
+ 				   var filas = $('<tr> <td class="codigo"></td> <td class="precio"></td> <td class="disponible"></td> <td class="bodega"></td> <td class="descripcion"></td> </tr>')
+ 				   filas.find('.codigo').text(element.codigoProducto);
+ 				   filas.find('.precio').text(element.precio);
+ 				   filas.find('.disponible').text(element.disponible);
+ 				   filas.find('.bodega').text(element.bodega);
+ 				   filas.find('.descripcion').text(element.descripcion);
+ 				   filas.appendTo($('table#tablaAlternos tbody'));
+ 		        });
+ 			   $('#productosAlternos').modal('toggle');
+ 		   }
+ 		   });
+    	}
     }
   }(window.jQuery, window, document));

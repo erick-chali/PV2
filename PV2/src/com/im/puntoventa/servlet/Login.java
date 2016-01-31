@@ -1,6 +1,11 @@
 package com.im.puntoventa.servlet;
 
 import java.io.IOException;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -63,15 +68,35 @@ public class Login extends HttpServlet {
 			String textoSucursal = (String) sesion.getAttribute("sucursal");
 			String[] partes = textoSucursal.split("\\s+");
 			sesion.setAttribute("codigoBodegaLocal", partes[0]);
+			System.out.println("bodega Local: " + (String)request.getSession().getAttribute("codigoBodegaLocal"));
 			sesion.setAttribute("vendedor", datos.getNombre());
 			sesion.setAttribute("usuarioID", datos.getUsuarioID());
 			sesion.setAttribute("codigoVendedor", datos.getCodigoVendedor());
 			sesion.setAttribute("nombreEmpresa", datos.getNombreEmpresa());
 			sesion.setAttribute("moneda", datos.getMoneda());
 			sesion.setAttribute("nombreDB", nombres);
+			sesion.setAttribute("codigoLista", "1");
 			sesion.setMaxInactiveInterval(30*30);
-			
-			response.sendRedirect("pv.jsp");
+			Date now = new Date();
+			 
+	        SimpleDateFormat simpleDateformat = new SimpleDateFormat("E"); // the day of the week abbreviated
+	        System.out.println(simpleDateformat.format(now));
+	 
+	        simpleDateformat = new SimpleDateFormat("EEEE"); // the day of the week spelled out completely
+	        System.out.println(simpleDateformat.format(now));
+	 
+	        Calendar calendar = Calendar.getInstance();
+	        calendar.setTime(now);
+	        System.out.println(calendar.get(Calendar.DAY_OF_WEEK)); //
+	        
+	        DateFormatSymbols symbols = new DateFormatSymbols(new Locale("es"));
+		     // for the current Locale :
+		     //   DateFormatSymbols symbols = new DateFormatSymbols(); 
+		     String[] dayNames = symbols.getWeekdays();
+		     for (String s : dayNames) { 
+		        System.out.print(s + " ");
+		     }
+			response.sendRedirect("m.pv.jsp");
 			
 		}else if(datos.getRespuesta()==0){
 			request.setAttribute("msjSesion", datos.getNotificacion());

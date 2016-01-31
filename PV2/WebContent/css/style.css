@@ -61,12 +61,20 @@ body {
 .descripcion{
 	overflow: hidden;
 }
+.obser{
+    
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 #datosVarios{
 	font-size: small;
 }
+/**
 #datosVarios tbody tr:hover{
 	background-color: #ffff4c;
-}
+}**/
 /***
 #datosVarios tbody tr td:nth-child(3){
 	width: 150px;

@@ -1,0 +1,26 @@
+
+body {
+  background-color: #ffffff;
+}
+#datosVarios > tbody > tr > td {
+	padding: 1px;
+}
+.esKit{
+	color: orange;
+	font-weight: bold;
+}
+#contenedorDatos{
+	margin-top: 10px;
+}
+[data-notify="progressbar"] {
+	margin-bottom: 0px;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+	height: 5px;
+}
+#datosVarios tbody tr.filaSeleccionada td { 
+	background-color: #B19CD9;
+}
+.fechaEntrega { font-size: 20px; }

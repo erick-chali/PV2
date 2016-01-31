@@ -26,36 +26,27 @@ public class ConectarDB {
 		String[] db = new String[2];
 		String[] servidor = new String[2];
 		String pass = "", user = "", bd = "", server = "";
-		File direccion = new File("c:\\millenium.udl");
+		File direccion = new File("c:\\PuntoVenta\\millenium.udl");
 		try {
 			try {
 				reader = new BufferedReader(
 							new InputStreamReader(new FileInputStream(direccion), "UTF-16"));
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
 				System.out.println("Encoding de archivo no soportada: " + e.getMessage());
 			}
-//			reader = new BufferedReader(
-//					new FileReader(
-//				"C:/millenium.udl"));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			System.out.println("Archivo no encontrado: " + e.getMessage());
 		}
-//
-//		// Read lines from file.
 		while (true) {
 		    String line = null;
 			try {
 				line = reader.readLine();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				System.out.println("No se pudo Leer el archivo: " + e.getMessage());
 			}
 		    if (line == null) {
 			break;
 		    }
-		    // Split line on comma.
 		    String[] parts = line.split(";");
 		    int x = 0;
 		    for (String part : parts) {
@@ -67,11 +58,9 @@ public class ConectarDB {
 		try {
 			reader.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			System.out.println("Error de Lectura de archivo: " + e.getMessage());
 		}
 		
-//		leer UDL
 		Connection conectar = null;
 		pass = datos[1];
 		user = datos[3];
@@ -89,14 +78,9 @@ public class ConectarDB {
 				System.out.println("Error de Driver: " + e.getMessage());
 			}
 			
-			//RECORDAR QUE ESTE DEBE SACAR LA INFORMACION DEL UDL.
 			String url="jdbc:sqlserver://"+(String)servidor[1]+";databaseName="+(String)db[1]+";user="+ (String)usuario[1] + ";password=" + (String)clave[1] + ";";
-			//			String usr = datos[3];
-//			String pass = datos[4];
+			
 			conectar = DriverManager.getConnection(url);
-//			conectar = DriverManager.getConnection("jdbc:sqlserver://vmsoluciones.cloudapp.net;databaseName=MilleniumNEW;user=sa;password=SOLUCION");
-//			conectar = DriverManager.getConnection("jdbc:sqlserver://186.64.110.212;databaseName=PbMillenium2;"+datos[3]+";"+datos[1]+";"+"integratedSecurity=true");
-//			conectar = DriverManager.getConnection("jdbc:sqlserver://186.64.110.212;databaseName=PbMillenium2;user=consultas;password=consultas*");
 		} catch (SQLException sqlex) {
 			System.out.println("Error de SQL: " + sqlex.getMessage());
 		}

@@ -22,7 +22,7 @@ public class CargarDatosDet {
 		
 		try{
 			con = new ConectarDB().getConnection();
-			stmt = con.prepareCall("{call stp_UDPV_LookUp_Mov_Det(?,?,?)}");
+			stmt = con.prepareCall("{call stp_UDPV_LookUp_Mov_Det_New(?,?,?)}");
 			stmt.setInt(1, tipoDocumento);
 			stmt.setString(2, serie);
 			stmt.setInt(3, numDocumento);

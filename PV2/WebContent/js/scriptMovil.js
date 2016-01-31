@@ -1,29 +1,48 @@
+/***
+ * Las vocales con tilde o las "ñ" deben ser colocadas manualmente de acuerdo con le UNICODE
+ * á = \u00E1
+ * é = \u00E9
+ * í = \u00ED
+ * ó = \u00F3
+ * ú = \u00FA
+ * **/
+
 (function ($, window, document) {
 	  
     
     $(function () {
+    	$.fn.capitalize = function () {
+    	    $.each(this, function () {
+    	        var split = this.value.split(' ');
+    	        for (var i = 0, len = split.length; i < len; i++) {
+    	            split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+    	        }
+    	        this.value = split.join(' ');
+    	    });
+    	    return this;
+    	};
+
+    	$('#nombre').on('keyup', function () {
+    	    $(this).capitalize();
+    	}).capitalize();
+    	$('#nit').on('input', function(evt) {
+    		  $(this).val(function (_, val) {
+    		    return val.toUpperCase();
+    		  });
+    		});
     	$("#datosVarios").freezeHeader({ 'height': '450px' });
     	$.get("http://ipinfo.io", function(response) {
     		console.log(response.ip);
     	    
     	}, "jsonp");
-    	var device = navigator.userAgent
-
-    	if (device.match(/Iphone/i)|| device.match(/Ipod/i)|| device.match(/Android/i)|| device.match(/J2ME/i)|| device.match(/BlackBerry/i)|| device.match(/iPhone|iPad|iPod/i)|| device.match(/Opera Mini/i)|| device.match(/IEMobile/i)|| device.match(/Mobile/i)|| device.match(/Windows Phone/i)|| device.match(/windows mobile/i)|| device.match(/windows ce/i)|| device.match(/webOS/i)|| device.match(/palm/i)|| device.match(/bada/i)|| device.match(/series60/i)|| device.match(/nokia/i)|| device.match(/symbian/i)|| device.match(/HTC/i))
-    	{
-    	window.location = "movil.pv.jsp";
-
-    	}
-    	else
-    	{
-    		console.log('Dispositivo Normal');
-    	}
     	
 	   var codigoP, descripcion, medida, cantidad, disponible, precioU, porDesc, descuento, importe, envio, dm, observ;
 	   var subTotal = 0;
 	   var Total;
 	   var temporal;
 	   var autorizado = 1;
+	   $('.correlativo').hide();
+	   $('.alternos').hide();
 	   $('#ocultarSuperior').click(function (){
 		   $('#parteSuperior').toggle('fast');
 	   });
@@ -62,7 +81,8 @@
 	   			$('#buscarProductos').modal('toggle');
            }else if(e.keyCode==119){
         	   encontrarImagen($('#indice').text());
-        	   
+           }else if(e.keyCode==120){
+        	   cargarAlternos();
            }
 	   });
 	   /**EVENTOS*/
@@ -105,12 +125,38 @@
 			   cargarDatosNit($(this).val());
 		   }
 	   });
+        $(document).on('keydown', '#porcentaje', function (e){
+            if(e.keyCode==13){
+                var indiceFila = $(this).parent().parent().index();
+                $('#indice').text(indiceFila);
+                codigoP = $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(0).children().val();
+	   			$('#codigoProd').text(codigoP);
+	   			var porcentaje = $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(6).children().val();
+	   			var dm = $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(11).children().val();
+	   			var im = $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(8).children().val();
+	   			
+	   			if(porcentaje == ' '){
+	   				
+	   			}else if(porcentaje > dm){
+	   				$('#autorizar').modal('toggle');
+	   			}else{
+	   				temporal = separarTexto(1, $('#subTotal').text());
+	   				var porCan = parseFloat(im * (porcentaje/100)).toFixed(2);
+	   				$('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(7).children().val(porCan);
+	   				$('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(8).children().val(im-porCan);
+	   				alert(im-porCan);
+	   				$('#subTotal').text('SubTotal: ' + (im-porCan));
+	   				$('#total').text('Total: ' + (im-porCan));
+	   				
+	   			}
+            }
+        });
 	   $('#siBodegas').click(function(){
 		   $('#botones').hide();
 		   $('#escondido').show();
 		   $('#contenedorProductosBodegas').empty();
 		   var cp;
-		   cp = $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(0).text();
+		   cp = $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').text();
 		   cargarProductosFiltroBodegas($('#codigoLista').text(), "", separarTexto(0, $('#fPago').val()), cp);
 	   });
 	   $(document).on('click', '.codigoProducto', function (){
@@ -135,44 +181,37 @@
 //				  });
 		   }
 	   });
-	   $('#datosVarios').on('click', '.verInfoProd', function(){
-		   $('#indice').text($(this).parent().parent().index());
-		   encontrarImagen($('#indice').text())
+	   $(document).on('click', '#datosVarios tbody tr', function (){
+		   $('#indice').text($(this).index());
 	   });
 	   $(document).on('click', '.cantidad', function (){
+		   $('#indice').text($(this).parent().index());
 		   if($('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').text()=='' || $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').text()=='--'){
-			   alert('Debe ingresar un codigo de producto para poder ingresar cantidad');
+			   alert('Debe ingresar un c\u00F3digo de producto para poder ingresar cantidad');
 		   }else{
 			   $('#indice').text($(this).parent().index());
 			   var indice;
 			   indice = $('#indice').text();
 		   }
-		   
-//		   $('.cantidad').editable(function(value, settings) {
-//			     return(value);
-//			  }, {
-//			     onblur  : 'cancel',
-//			     event   : 'dblclick',
-//			     style   : 'inherit',
-//			     callback : function(value, settings) {
-//			    	 
-//			    	 ejecutarCantidad(value, $('#indice').text());
-//			     }
-//			  });
 	   });
 	   
 	   $(document).on('click', '.porcentaje', function (){
-		   $('#indice').text($(this).parent().index());
-		   
+//		   $('#indice').text($(this).parent().index());
+		   if($('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').text()=='' || $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').text()=='--'){
+			   alert('Debe ingresar un c\u00F3digo de producto para poder ingresar el porcentaje');
+		   }
 	   });
 	   $(document).on('click', '.borrar', function (){
-		   $(this).parent().parent().remove();
+		   $('#datosVarios > tbody > tr').eq($('#indice').text()).remove();
 		   if($('#datosVarios  tbody').children().length == 0){
 			   agregarFila();
 			   hacerCamposEditables();
-			   $('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').trigger('click');
+			   $('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').trigger('dblclick');
 		   }
 		   
+	   });
+	   $(document).on('click', '.ojoProducto', function (){
+		   encontrarImagen($('#indice').text());
 	   });
 //	   $(document).on('keydown', '.codigoProducto', function(e){
 //		   if(e.keyCode==9){
@@ -221,6 +260,7 @@
 							   				$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.descuento').text();
 							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.importe').text(parseFloat(resultado).toFixed(2));
 							   sumarColumnaImporte();
+							   $('#autorizar').modal('toggle');
 					   }
 					   }else if(parseInt(responseText)==0){
 						   $('#permiso').text(responseText);
@@ -229,7 +269,7 @@
 							   $('#autorizar').modal('toggle');
 							   alert('credenciales incorrectas');
 							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.porcentaje').text('');
-							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.porcentaje').trigger('click');
+							   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.porcentaje').trigger('dblclick');
 						   }
 					   }
 				   }
@@ -253,7 +293,7 @@
 		   }else{
 			   agregarFila();
 			   hacerCamposEditables();
-			   $('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').trigger('click');
+			   $('#datosVarios > tbody > tr').eq(0).find('.codigoProducto').trigger('dblclick');
 		   }
 	   });
 	   
@@ -357,7 +397,8 @@
 		   $('#buscarProductosBodegas').modal('toggle');
 		   //enfocar cantidad
 		   
-		   $('#datosVarios > tbody > tr').eq($('#indice').text()).children().eq(3).children().val();
+		   $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.precio').text($td.find('.xBodegasPrecio').text());
+		   
 		   
 		   //hacer la suma
 		   var resultado;
@@ -372,7 +413,8 @@
         
         
         /**SELECCIONAR EL CLIENTE**/
-        $jq("table[id$='tablaClientes'] td:nth-child(1)").live('click',function(event) {
+       	//$jq("table[id$='tablaClientes'] td:nth-child(1)").live('click',function(event) {
+        $jq("table[id$='tablaClientes'] td").live('click',function(event) {
             event.preventDefault(); 
             var $td= $(this).closest('tr').children('td');
             $('#buscarClientes').modal('toggle');
@@ -383,7 +425,7 @@
             event.preventDefault(); 
             var $td= $(this).closest('tr').children('td');
             $('#buscarDocumentos').modal('toggle');
-            cargarEncabezado(1, '', $.trim($td.eq(0).text()));
+            cargarEncabezado(1, $.trim($('#serieDoc').text()), $.trim($td.eq(0).text()));
 	   });
 	   //grabar el Documento
 	   $('#grabarDocumento').click(function(){
@@ -396,8 +438,6 @@
 		   if(incompletos > 0){
 			   alert('Debe llenar todas las filas antes de grabar el documento, o de lo contrario, elimine las que no desee.');
 		   }else{
-			   var numFilas = $('#datosVarios >tbody >tr').length;
-			   $('#numFilas').text(numFilas);
 			   $.post('IngresarEnc',{
 				   codigoCliente : $('#codigoCliente').text(), nit : $('#nit').val(), nombreCliente : $('#nombre').val(),
 				   direcFactura : $('#direcF').val(), tel : $('#telefono').val(), tarjeta : $('#tarjeta').val(),
@@ -411,15 +451,22 @@
 				   saldo : $('#saldoCliente').text()
 			   } ,function(responseText) {
 				   if(responseText!=null){
-					   var numDocumento;
-					   numDocumento = $.trim(responseText);
-					   $('#numDocumento').text(numDocumento);
-					   guardarDetalle(numDocumento);
-				   }   
+					   console.log(responseText);
+					   $('#numDoc').text(separarTexto(1, responseText));
+					   $('#nDoc').val($('#numDoc').text());
+		   			   
+					   if(separarTexto(0, responseText) == 'NA'){
+						   $('#serie').text(' ');
+		   					$('#serieDoc').text($('#serie').text());
+					   }else{
+						   $('#serie').text(separarTexto(0, responseText));
+		   					$('#serieDoc').text($('#serie').text());
+					   }
+					   guardarDetalle($('#numDoc').text());
+				   }
 			   });
 		   }
 		   
-//		   
 	   });
 	   $(document).on('keydown', '.cantidad', function (e){
 		   //en el arreglo las teclas permitidas
@@ -443,7 +490,7 @@
 		            e.preventDefault();
 		        }
 	   });
-	   $(document).on('keypress', '.porcentaje', function (e){
+	   $(document).on('keydown', '.porcentaje', function (e){
 		   if ($.inArray(e.keyCode, [8, 9, 27, 13, 110]) !== -1 ||
 		            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
 		            (e.keyCode >= 35 && e.keyCode <= 40)) {
@@ -453,6 +500,40 @@
 		            e.preventDefault();
 		        }
 	   });
+	   $(document).on('mouseover','.contenDescrip',function (e){
+		   $(this).tooltip({
+			   title : $(this).text()
+		   });
+	   });
+       $('#exportarPDf').click(function (e){
+    	   if($('#tDoc').val()=='' || $('#nDoc').val()==''){
+    		   alert('El n\u00FAmero de documento y el tipo de documento son necesarios para generar un reporte.');
+    	   }else{
+        	   $.post('CrearReporte',{
+        		   tipoDoc : separarTexto(0, $('#tDoc').val()), 
+        		   serie : $('#serie').text(), 
+        		   noDoc : $('#nDoc').val(), 
+        		   tipoPago : separarTexto(0, $('#fPago').val()),
+        		   caja  : $('#caja').text()
+        		   } ,function(responseText) {
+       	 		   if(responseText!=null){
+       	 			   alert(responseText);
+       	 			   location.reload();
+       	 		   }
+       	 				   
+       	 	   });
+    	   }
+       });
+       $('#fPago').keydown(function (e){
+    	   if ($.inArray(e.keyCode, [8, 9, 27, 13, 110]) !== -1 ||
+		      (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+		      (e.keyCode >= 35 && e.keyCode <= 40)) {
+		                 return;
+		      }
+    	   if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+    		   e.preventDefault();
+    	   }
+       });
    });/**fin de document.ready*/
     function cargarDetalle(tipoDoc, serie, numDocumento){
     	$.post('CargarDetalle',{tipoDoc : tipoDoc, serie : serie, numDocumento : numDocumento} ,function(responseJson) {
@@ -463,6 +544,7 @@
 	 			   $.each(responseJson, function(key, value) {
 	 				  
 	 				  var rowNew = $('<tr>' +
+	 						  	'<td class=""><span class="glyphicon glyphicon-minus text-danger borrar" aria-hidden="true"></span>  <span class="glyphicon glyphicon-eye-open ojoProducto" aria-hidden="true"></span></td>'+
 	 		            		'<td class="codigoProducto"></td>'+
 	 		            		'<td class="medida"></td>'+
 	 		            		'<td class="descripcion"><div class="contenDescrip"></div></td>'+
@@ -477,6 +559,8 @@
 	 		            		'<td class="dm" ></td>'+
 	 		            		'<td class="obser"></td>'+
 	 		            		'<td class="kit"></td>'+
+	 		            		'<td class="correlativo"></td>'+
+	 		            		'<td class="alternos"></td>'+
 	 		            	'</tr>');
 	 				  	rowNew.appendTo($('table#datosVarios tbody'));
 	 				  	$('#datosVarios > tbody > tr').eq(fila).find('.codigoProducto').text(value['codigoProducto']);
@@ -503,6 +587,8 @@
 		               
 	 			    });
 	 			  $('.kit').hide();
+	 			  $('.correlativo').hide();
+	 			  $('.alternos').hide();
 	 		   }
 	 				   
 	 	   });
@@ -533,58 +619,155 @@
  		 	   });
     }
     function guardarDetalle(numeroDocumento){
-    	 $('#datosVarios tbody tr').each(function (index){
-	    		var codigoP,descripcion,medida,cantidad,disponible,precioU, porDesc, descuento, importe, dm, observ,envio
-				   var bod, kit;
-				   codigoP = $('#datosVarios > tbody > tr').eq(index).find('.codigoProducto').text();
-				   descripcion = $('#datosVarios > tbody > tr').eq(index).find('.descripcion').text();
-				   medida = $('#datosVarios > tbody > tr').eq(index).find('.medida').text();
-				   cantidad = $('#datosVarios > tbody > tr').eq(index).find('.cantidad').text();
-				   disponible = $('#datosVarios > tbody > tr').eq(index).find('.disponible').text();
-				   precioU = $('#datosVarios > tbody > tr').eq(index).find('.precio').text();
-				   if($('#datosVarios > tbody > tr').eq(index).find('.porcentaje').text()==''){
-					   porDesc = 0.00;
-				   }else{
-
-					   porDesc = $('#datosVarios > tbody > tr').eq(index).find('.porcentaje').text();
-				   }
-				   descuento = $('#datosVarios > tbody > tr').eq(index).find('.descuento').text();
-				   importe = $('#datosVarios > tbody > tr').eq(index).find('.importe').text();
-				   bod = $('#datosVarios > tbody > tr').eq(index).find('.bodega').text();
-				   if($('#datosVarios > tbody > tr').eq(index).find('.envio').children().prop('checked')){
-					   envio = 1;
-				   }else{
-					   envio = 0;
-				   }
-				   dm = $('#datosVarios > tbody > tr').eq(index).find('.dm').text();
-				   observ = $('#datosVarios > tbody > tr').eq(index).find('.obser').text();
-				   kit = $('#datosVarios > tbody > tr').eq(index).find('.kit').text();
-				   
-				   $.post('IngresarDet',{
-					   tipoDocumento : separarTexto(0, $('#tDoc').val()), serieDocumento : '', numeroDocumento : numeroDocumento, numCorrelativo : 1, codigoProducto : codigoP,
-					   UMedida : medida, cantidad: $('#datosVarios > tbody > tr').eq(index).find('.cantidad').text(), precio : precioU, porDescuento : porDesc, descuento : descuento, total: importe, codigoCliente : $('#codigoCliente').text(),
-					   promo : 0, bodega : bod, envio : envio, observaciones : observ, lista : $('#codigoLista').text(), pago : separarTexto(0, $('#fPago').val()), kit : kit, corrKit : 0, codPromo : 0,
-					   serieDevProy : '', numDevProy : '0', ordenCompra : 0
-					   
-					   
-				   } ,function(responseText) {
-					   return false;
-					   if(responseText!=null){
-//						   alert(responseText);
-						   return true;
-//						   alert('Producto grabado en documento numero: ' + $('#numDocumento').text());
-					   }
-							   
-				   });
-			   });
+    	console.log('Doc pasado: ' + numeroDocumento);
+    	var numFilas = $('#datosVarios >tbody >tr').length;
+    	$('#numFilas').text(numFilas);
+    	var contenido ;
+		
+    	var getJsonFromTable = function()
+        {
+             var rows = [];
+            $('#datosVarios tbody tr').each(function(i, n){
+            	var envio;
+            	
+                var $row = $(n);
+                if($row.find('.envio').children().prop('checked')){
+            		envio = 1;
+            	}else{
+            		envio = 0;
+            	}
+                rows.push({
+                	tipoDocumento : separarTexto(0, $('#tDoc').val()),
+                    codigoProducto: $row.find('.codigoProducto').text(),
+                    descripcion : $row.find('.descripcion').text(),
+                    precio: $row.find('.precio').text(),
+                    cantidad : $row.find('.cantidad').text(),
+                    bodega : $row.find('.bodega').text(),
+                    disponible : $row.find('.disponible').text(),
+                    medida : $row.find('.medida').text(),
+                    porcentaje : $row.find('.porcentaje').text(),
+                    descuento : $row.find('.descuento').text(),
+                    importe : $row.find('.importe').text(),
+                    dm : $row.find('.dm').text(),
+                    envio : envio,
+                    observaciones : $row.find('.obser').text(),
+                    kit : $row.find('.kit').text(),
+                    correlativo : $row.find('.correlativo').text(),
+					pago : separarTexto(0, $('#fPago').val()),
+					codigoCliente : $('#codigoCliente').text(),
+					lista : $('#codigoLista').text(),
+                    promo : 0,
+                    corrKit : 0,
+					codPromo : 0,
+					serieDevProy : '', 
+					numDevProy : '0',
+					ordenCompra: 0
+                });                
+            });
+            return JSON.stringify(rows);
+        };
+        $.ajax({
+			   type : 'POST',
+			   url : 'IngresarDet',
+			   dataType : 'html',
+			   data : {
+				   datos : getJsonFromTable()
+				   },
+		   success : function(data){
+			   console.log(data);
+		   } 
+		   });
+    	
+//    	for (i = 0, j=0; i < numFilas; i++) {
+//    		setTimeout(function(){
+//				   console.log('tiempo');
+//		   },1500);
+//    		j++;
+//    		console.log(i);
+//    		var codigoP,descripcion,medida,cantidad,disponible,precioU, porDesc, descuento, importe, dm, observ,envio, correlativo;
+//			   var bod, kit;
+//			   codigoP = $('#datosVarios > tbody > tr').eq(i).find('.codigoProducto').text();
+//			   descripcion = $('#datosVarios > tbody > tr').eq(i).find('.descripcion').text();
+//			   medida = $('#datosVarios > tbody > tr').eq(i).find('.medida').text();
+//			   cantidad = $('#datosVarios > tbody > tr').eq(i).find('.cantidad').text();
+//			   disponible = $('#datosVarios > tbody > tr').eq(i).find('.disponible').text();
+//			   precioU = $('#datosVarios > tbody > tr').eq(i).find('.precio').text();
+//			   if($('#datosVarios > tbody > tr').eq(i).find('.porcentaje').text()==''){
+//				   porDesc = 0.00;
+//			   }else{
+//
+//				   porDesc = $('#datosVarios > tbody > tr').eq(i).find('.porcentaje').text();
+//			   }
+//			   descuento = $('#datosVarios > tbody > tr').eq(i).find('.descuento').text();
+//			   importe = $('#datosVarios > tbody > tr').eq(i).find('.importe').text();
+//			   bod = $('#datosVarios > tbody > tr').eq(i).find('.bodega').text();
+//			   if($('#datosVarios > tbody > tr').eq(i).find('.envio').children().prop('checked')){
+//				   envio = 1;
+//			   }else{
+//				   envio = 0;
+//			   }
+//			   dm = $('#datosVarios > tbody > tr').eq(i).find('.dm').text();
+//			   observ = $('#datosVarios > tbody > tr').eq(i).find('.obser').text();
+//			   kit = $('#datosVarios > tbody > tr').eq(i).find('.kit').text();
+//			   correlativo = $('#datosVarios > tbody > tr').eq(i).find('.correlativo').text();
+//			   
+//			   var ingresado;
+//			   ingresado = false;
+//			   
+//				   $.ajax({
+//					   type : 'POST',
+//					   url : 'IngresarDet',
+//					   dataType : 'html',
+//					   data : {
+//						   tipoDocumento : separarTexto(0, $('#tDoc').val()),
+//						   serieDocumento : $('#serie').text(),
+//						   numeroDocumento : $('#numDoc').text(),
+//						   numCorrelativo : j,
+//						   codigoProducto : codigoP,
+//						   UMedida : medida,
+//						   cantidad : cantidad,
+//						   precio : precioU,
+//						   porDescuento : porDesc,
+//						   descuento : descuento,
+//						   total : importe,
+//						   codigoCliente : $('#codigoCliente').text(),
+//						   promo : 0,
+//						   bodega : bod,
+//						   envio : envio,
+//						   observaciones  : observ,
+//						   lista : $('#codigoLista').text(),
+//						   pago : separarTexto(0, $('#fPago').val()),
+//						   kit : kit,
+//						   corrKit : 0,
+//						   codPromo : 0,
+//						   serieDevProy : '', 
+//						   numDevProy : '0', 
+//						   ordenCompra : 0
+//					   },
+//				   success : function(data){
+//					   console.log(data);
+//				   } 
+//				   });
+//				   alert('pausa');
+//    	}/**fin for**/
     	
     }
    function traerProducto(codigoProducto, tipoPago, lista, indiceFila){
 	   $('#indice').text(indiceFila);
 	    
         $.post('TraerProducto',{codigo : codigoProducto, lista : lista, formaPago : tipoPago} ,function(responseJson){
+        		$('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text('');
+        		$('#datosVarios > tbody > tr').eq(indiceFila).find('.medida').text('');
+        		$('#datosVarios > tbody > tr').eq(indiceFila).find('.descripcion').children().text('');
+        		$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').text('');
+        		$('#datosVarios > tbody > tr').eq(indiceFila).find('.disponible').text('');
+        		$('#datosVarios > tbody > tr').eq(indiceFila).find('.precio').text('');
+        		$('#datosVarios > tbody > tr').eq(indiceFila).find('.porcentaje').text('');
+        		$('#datosVarios > tbody > tr').eq(indiceFila).find('.descuento').text('');
+        		$('#datosVarios > tbody > tr').eq(indiceFila).find('.importe').text('');
+        		$('#datosVarios > tbody > tr').eq(indiceFila).find('.bodega').text('');
+        		$('#datosVarios > tbody > tr').eq(indiceFila).find('.dm').text('');
 		 		   if(responseJson!=null){
-		 			   console.log('Existe Producto');
 		 			   $.each(responseJson, function(key, value) {
 		 				  $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text($.trim(value['codigoProducto']));
 		 				   $('#datosVarios > tbody > tr').eq(indiceFila).find('.medida').text(value['medida']);
@@ -611,18 +794,33 @@
 		 		   if($('#datosVarios > tbody > tr').eq(indiceFila).find('.descripcion').text()==''){
 		 			   alert('codigo de producto no existe en la DB');
 		 			   $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text('');
-		 			   $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').trigger('click');
-		 			   $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').focus();
+		 			   $('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').trigger('dblclick');
 		 		   }else{
 		 				  sumarColumnaImporte();
-				 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').trigger('click');
-				 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').focus();
-				 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').val('');			 			
+				 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').trigger('dblclick');
+				 			$('#datosVarios > tbody > tr').eq(indiceFila).find('.cantidad').val('');
 		 		   }
+		 		  $.ajax({
+					   type : 'POST',
+					   url : 'ProductosAlternos',
+					   dataType : 'html',
+					   data : {
+						   codigoProducto : $.trim($('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text())
+						   },
+				   success : function(data){
+					   if(data=="1"){
+						   $('#datosVarios > tbody > tr').eq(indiceFila).find('.alternos').text($.trim(data))
+						   alert('Hay producto alterno disponible, presionar F9 para verlo');
+					   }else{
+						   $('#datosVarios > tbody > tr').eq(indiceFila).find('.alternos').text($.trim(data))
+					   }
+				   } 
+				   });
 		 	   });
+        
+        
    }
    function ejecutarCantidad(cantidad, indiceFila){
-	   console.log('indice Fila en cantidad: ' + indiceFila);
 	   revisarCantidadMismoProducto($('#datosVarios > tbody > tr').eq(indiceFila).find('.codigoProducto').text(), cantidad, $('#indice').text());
 	   
 	   var importe;
@@ -754,7 +952,7 @@
 					    	 
 					     }
 					  });
-					$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').trigger('click');
+					$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').trigger('dblclick');
 			    });
 		   }
 				   
@@ -791,13 +989,11 @@
  //Autorizar tipo documento
    function autorizarDocumento(operacion, usuario, clave){
 	   var respuesta;
-	   console.log('v1' + operacion + ' v2 ' + usuario + ' v3 ' + clave);
 	   $.post('Privilegios',{operacion : operacion, usuario : usuario, pass : clave} ,function(responseText) {
 		   if(responseText!=null){
 			   console.log('Hay respuesta ' + responseText);
 			   if(parseInt(responseText)==1){
 				   $('#permiso').text(responseText);
-				   console.log(responseText);
 				   if(operacion == 7){
 					   console.log('ejecutar cantidad');
 				   }
@@ -805,7 +1001,6 @@
 //				   $('#autorizar').modal('toggle');
 			   }else if(parseInt(responseText)==0){
 				   $('#permiso').text(responseText);
-				   console.log(responseText);
 				   if(operacion == 7){
 					   console.log('regreso a celda de porcentaje');
 				   }
@@ -843,8 +1038,8 @@
 			       var thead = $("<thead></thead>");
 			       var tbody = $("<tbody></tbody>");
 			       var encabezado = $("<tr> <th></th> <th></th> </tr>");
-			       encabezado.children().eq(0).text("Codigo Pago");
-			       encabezado.children().eq(1).text("Descripcion");
+			       encabezado.children().eq(0).text("C\u00F3digo Pago");
+			       encabezado.children().eq(1).text("Descripci\u00F3n");
 			       
 			       encabezado.appendTo(thead);
 			       tabla.appendTo(contenedor);
@@ -858,6 +1053,10 @@
 			               rowNew.appendTo($('table#tablaPagos tbody'));
 			       });
 			       $('#tablaPagos').dataTable( {
+			    	   "columnDefs": [
+										{ "width": "25px", "targets": 0 },
+										{ "width": "500px", "targets": 1 }
+				                     ],
 			    	   "scrollY" : 200,
 			    	   "scrollX" : true,
 				        "language": {
@@ -989,10 +1188,12 @@
 			        }
 			        
 			    });
+		       verificarDisponibleOtrasBodegas();
 		       }
 	   });
    }
     function cargarFiltroClientes(opcion, texto){
+    	$("#contenedorClientes").empty();
         $.post('FiltroClientes',{opcion : opcion, criterio : texto}, function(responseJson){
 		   if(responseJson!=null){
 			   var contenedor = $("#contenedorClientes");
@@ -1008,8 +1209,8 @@
 		       thead.appendTo(tabla);
 		       tbody.appendTo(tabla);
 		       $.each(responseJson, function(key,value) {
-		            var rowNew = $("<tr> <td><a href='#'></a></td> <td></td> <td></td> </tr>");
-		               rowNew.children().children().eq(0).text(value['nit']);
+		            var rowNew = $("<tr> <td></td> <td></td> <td></td> </tr>");
+		               rowNew.children().eq(0).text(value['nit']);
 		               rowNew.children().eq(1).text(value['nombre']);
 		               rowNew.children().eq(2).text(value['tarjeta']);
 		               rowNew.appendTo($('table#tablaClientes tbody'));
@@ -1034,13 +1235,13 @@
 		       var thead = $("<thead></thead>");
 		       var tbody = $("<tbody></tbody>");
 		       var encabezado = $("<tr> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> </tr>");
-		       encabezado.children().eq(0).text("No. Cotizacion");
+		       encabezado.children().eq(0).text("No. Cotizaci\u00F3n");
 		       encabezado.children().eq(1).text("Nombre");
 		       encabezado.children().eq(2).text("Nit");
-		       encabezado.children().eq(3).text("Fecha");
-               encabezado.children().eq(4).text("Monto");
-               encabezado.children().eq(5).text("Autorizacion");
-               encabezado.children().eq(6).text("FAutorizo");
+		       encabezado.children().eq(3).text("Monto");
+               encabezado.children().eq(4).text("Fecha");
+               encabezado.children().eq(5).text("Autoriz.");
+               encabezado.children().eq(6).text("FAutoriz\u00F3");
                
 		       encabezado.appendTo(thead);
 		       tabla.appendTo(contenedor);
@@ -1052,22 +1253,32 @@
 		               rowNew.children().eq(1).text(value['nombre']);
 		               rowNew.children().eq(2).text(value['nit']);
 		               if(typeof value['fecha'] == 'undefined'){
-		            	   rowNew.children().eq(3).text('N/A');
+		            	   rowNew.children().eq(4).text('N/A');
 		               }else{
-		            	   rowNew.children().eq(3).text(separarTexto(0, value['fecha']));
+		            	   rowNew.children().eq(4).text(componerFecha(value['fecha']));
 		               }
 		               
-		               rowNew.children().eq(4).text(value['monto']);
+		               rowNew.children().eq(3).text('Q.' + parseFloat(value['monto']).toFixed(2));
 		               rowNew.children().eq(5).text(value['autorizacion']);
 		               rowNew.children().eq(6).text(value['fAutorizacion']);
 		               if(typeof value['fAutorizacion'] == 'undefined'){
 		            	   rowNew.children().eq(6).text('N/A');
 		               }else{
-		            	   rowNew.children().eq(3).text(separarTexto(0, value['fAutorizacion']));
+		            	   rowNew.children().eq(6).text(componerFecha(value['fAutorizacion']));
 		               }
 		               rowNew.appendTo($('table#tablaCotizaciones tbody'));
 		       });
 		       $("#tablaCotizaciones").dataTable( {
+		    	   "columnDefs": [
+
+			                       { "width": "25px", "targets": 0 },
+			                       { "width": "350px", "targets": 1 },
+			                       { "width": "75px", "targets": 2 },
+			                       { "width": "75px", "targets": 3 },
+			                       { "width": "100px", "targets": 4 },
+			                       { "width": "20px", "targets": 5 },
+			                       { "width": "100px", "targets": 6 }
+			                     ],
 		    	   "scrollY" : 200,
 		    	   "scrollX" : true,
 			        "language": {
@@ -1147,13 +1358,29 @@
     		
 		});
     }
+    function verificarDisponibleOtrasBodegas(){
+    	var cantUsada, bodegaUsada;
+    	cantUsada = $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.disponible').text();
+    	bodegaUsada = $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.bodega').text();
+    	
+    	$('#tablaProductosBodega tbody tr').each(function (index){
+    		if($('#tablaProductosBodega > tbody > tr').eq(index).find('.xBodegasBodega').text() == bodegaUsada){
+    			var nuevoDisponible;
+    			nuevoDisponible = $('#tablaProductosBodega > tbody > tr').eq(index).find('.xBodegasDisponible').text() - cantUsada;
+    			$('#tablaProductosBodega > tbody > tr').eq(index).find('.xBodegasDisponible').text(nuevoDisponible);
+    		}
+    		
+    		
+		});
+    }
+    
     function agregarFila(){
     	var filaNueva = $(
 	   			'<tr>' +
-	   				'<td class="verInfoProd"><span class="glyphicon glyphicon-minus text-danger borrar" aria-hidden="true">    </span><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></td>'+
+	   				'<td class=""><span class="glyphicon glyphicon-minus text-danger borrar" aria-hidden="true"></span>  <span class="glyphicon glyphicon-eye-open ojoProducto" aria-hidden="true"></span></td>'+
             		'<td class="codigoProducto"></td>'+
             		'<td class="medida"></td>'+
-            		'<td class="descripcion"><div class="contenDescrip"></div></td>'+
+            		'<td class="descripcion"><div class="contenDescrip" data-toggle="tooltip"></div></td>'+
             		'<td class="cantidad"></td>'+
             		'<td class="disponible"></td>'+
             		'<td class="precio"></td>'+
@@ -1165,41 +1392,57 @@
             		'<td class="dm" ></td>'+
             		'<td class="obser"></td>'+
             		'<td class="kit"></td>'+
+            		'<td class="correlativo"></td>'+
+            		'<td class="alternos"></td>'+
         		'</tr>'
 	   	 );
     	
     	//agregando la fila y ocultando la celda de kit.
 	   	 filaNueva.prependTo(('#datosVarios > tbody'));
 	   	 $('.kit').hide();
+	   	 $('.correlativo').hide();
+	   	 $('.alternos').hide();
+	   	var numFilas = $('#datosVarios >tbody >tr').length;
+	   	var indice;
+	   	indice = 0;
+	   	for(i=0;i<numFilas;i++){
+	   		indice++;
+	   		$('#datosVarios > tbody > tr').eq(i).find('.correlativo').text(indice);
+	   	}
+	   	
     }
     function encontrarImagen(indice){
-    	console.log('Indice de Fila' + indice)
-    	if($('#datosVarios > tbody > tr').eq(indice).find('.codigoProducto').text() == ''){
+    	$('#thumbIMG').empty();
+    	if($('#datosVarios > tbody > tr').eq(indice).find('.codigoProducto').text() == '' || $('#datosVarios > tbody > tr').eq(indice).find('.codigoProducto').text() == '--'){
     		alert('Debe ingresar un producto antes de poder ver su imagen o pdf');
     	}else{
-    		console.log('CodigoProducto: ' + $('#datosVarios > tbody > tr').eq(indice).find('.codigoProducto').text());
     		$.post('BuscarImagen',{
-    			
     			codigoProducto : $('#datosVarios > tbody > tr').eq(indice).find('.codigoProducto').text()
 			   } ,function(responseText) {
+
+				   console.log('respuesta : ' + responseText);
 				   if(responseText!=null){
-					   if(responseText==''){
-						   var imagen = document.getElementById('imgProducto');
-				     	   imagen.src = 'imagenes/noImage.png';
+					   if(responseText == 0){
+						   var imagen = new Image();
+						   imagen.src = "img/noImage.png";
+						   $('#thumbIMG').append(imagen);
 				     	   $('#infoProducto').modal('toggle');
-						   console.log('No existe imagen.');
 					   }else{
-						   var imagen = document.getElementById('imgProducto');
-						   console.log($.trim(responseText));
-						   var ruta = 'imagenes/';
-				     	   imagen.src = ruta.concat($.trim(responseText));
-				     	   $('#infoProducto').modal('toggle');
+						   var imagen = new Image();
+						   		imagen.src = "data:image/jpeg;base64," + hexToBase64(responseText);
+						   		$('#thumbIMG').append(imagen);
+					     	   $('#infoProducto').modal('toggle');
 					   }
 					   
-				   }   
+				   }
 			   });
     		
     	}
+    }
+    function hexToBase64(str) {
+    	  return btoa(String.fromCharCode.apply(null,
+    	    str.replace(/\r|\n/g, "").replace(/([\da-fA-F]{2}) ?/g, "0x$1 ").replace(/ +$/, "").split(" "))
+    	  );
     }
     function ejecutarPorcentaje(porcentaje, indice){
     	if(porcentaje > 100 ){
@@ -1211,6 +1454,14 @@
             $('#opcionPermisos').text('6');
             $('#permisosUsuario').focus();
             
+        }else{
+        	var resultado = $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.importe').text() * 
+				($('#datosVarios > tbody > tr').eq($('#indice').text()).find('.porcentaje').text()/100);
+        		$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.descuento').text(parseFloat(resultado).toFixed(2));
+        		resultado = $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.importe').text() - 
+        		$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.descuento').text();
+        		$('#datosVarios > tbody > tr').eq($('#indice').text()).find('.importe').text(parseFloat(resultado).toFixed(2));
+        		sumarColumnaImporte();
         }
     }
     function hacerCamposEditables(){
@@ -1218,7 +1469,7 @@
 		     return(value);
 		  }, {
 		     onblur  : 'cancel',
-		     event   : 'click',
+		     event   : 'dblclick',
 		     style   : 'inherit',
 		     callback : function(value, settings) {
 		    	 traerProducto(value, separarTexto(0, $('#fPago').val()), $('#codigoLista').text() ,$('#indice').text());
@@ -1229,23 +1480,90 @@
 		     return(value);
 		  }, {
 		     onblur  : 'cancel',
-		     event   : 'click',
+		     event   : 'dblclick',
 		     style   : 'inherit',
 		     callback : function(value, settings) {
 		    	 
 		    	 ejecutarCantidad(value, $('#indice').text());
 		     }
 		  });
+    	
   	$('.porcentaje').editable(function(value, settings) {
 		     return(value);
 		  }, {
 		     onblur  : 'cancel',
-		     event   : 'click',
+		     event   : 'dblclick',
+		     style   : 'inherit',
+		     callback : function(value, settings) {
+		    	 ejecutarPorcentaje(value, $('#indice').text());
+		     }
+		  });
+  	$('.obser').editable(function(value, settings) {
+	     return(value);
+	  }, {
+	     onblur  : 'cancel',
+	     event   : 'dblclick',
+	     style   : 'inherit',
+	     callback : function(value, settings) {
+	     }
+	  });
+
+    }
+    
+    function hacerBodegaEditable(){
+    	$('.bodega').editable(function(value, settings) {
+		     return(value);
+		  }, {
+		     onblur  : 'cancel',
+		     event   : 'dblclick',
 		     style   : 'inherit',
 		     callback : function(value, settings) {
 		    	 ejecutarPorcentaje(value, $('#indice').text());
 		     }
 		  });
     }
-    
+    function cargarAlternos(){
+    	if($('#datosVarios > tbody > tr').eq($('#indice').text()).find('.alternos').text()=="1"){
+    		$.ajax({
+ 			   type : 'POST',
+ 			   url : 'CargarAlternos',
+ 			   dataType : 'json',
+ 			   data : {
+ 				   codigoProducto : $('#datosVarios > tbody > tr').eq($('#indice').text()).find('.codigoProducto').text(),
+ 				   formaPago : separarTexto(0, $('#fPago').val()),
+ 				   lista : $('#codigoLista').text()
+ 			   },
+ 			   error : function(e){
+ 				   alert(e.responseText);
+ 			   },
+ 		   success : function(data){
+ 			   $('#contenedorAlternos').empty();
+ 			   
+ 			   var tabla = $('<table id="tablaAlternos" class="table table-striped table-bordered table-condensed table-hover"></table>');
+ 			   var thead = $('<thead></thead>');
+ 			   var detalle = $('<tbody></tbody>');
+ 			   var encabezado = $('<tr> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> <th></th> </tr>');
+ 			   encabezado.children().eq(0).text('C\u00F3digo');
+ 			   encabezado.children().eq(1).text('Precio U.');
+ 			   encabezado.children().eq(2).text('Disponible');
+ 			   encabezado.children().eq(3).text('Bodega');
+ 			   encabezado.children().eq(4).text('Descripcion');
+ 			   encabezado.appendTo(thead);
+ 			   thead.appendTo(tabla);
+ 			   detalle.appendTo(tabla);
+ 			   tabla.appendTo('#contenedorAlternos');
+ 			   $.each(data, function(index, element) {
+ 				   var filas = $('<tr> <td class="codigo"></td> <td class="precio"></td> <td class="disponible"></td> <td class="bodega"></td> <td class="descripcion"></td> </tr>')
+ 				   filas.find('.codigo').text(element.codigoProducto);
+ 				   filas.find('.precio').text(element.precio);
+ 				   filas.find('.disponible').text(element.disponible);
+ 				   filas.find('.bodega').text(element.bodega);
+ 				   filas.find('.descripcion').text(element.descripcion);
+ 				   filas.appendTo($('table#tablaAlternos tbody'));
+ 		        });
+ 			   $('#productosAlternos').modal('toggle');
+ 		   }
+ 		   });
+    	}
+    }
   }(window.jQuery, window, document));

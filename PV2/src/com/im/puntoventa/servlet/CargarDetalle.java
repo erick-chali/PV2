@@ -57,7 +57,6 @@ public class CargarDetalle extends HttpServlet {
 		JsonElement elemento = gson.toJsonTree(listado, new TypeToken<List<DatosDet>>(){}.getType());
 		JsonArray arreglo = elemento.getAsJsonArray();
 		response.setContentType("application/json");
-		
 		response.getWriter().print(arreglo);
 	}
 

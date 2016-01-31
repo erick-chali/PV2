@@ -52,7 +52,7 @@ public class IngresarDet extends HttpServlet {
 		JsonParser parser = new JsonParser();
 		JsonElement arreglo = parser.parse((String)request.getSession().getAttribute("datosTabla"));
 		registros = arreglo.getAsJsonArray().size();
-		
+		System.out.println(arreglo);
 		for(int x =0; x < registros; x++){
 			Connection con = null;
 			CallableStatement stmt = null;
@@ -74,7 +74,8 @@ public class IngresarDet extends HttpServlet {
 				stmt.setInt(1, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("tipoDocumento").getAsInt());
 				stmt.setString(2, (String) request.getSession().getAttribute("serieDoc"));
 				stmt.setString(3, (String)request.getSession().getAttribute("numeroDocumento"));
-				stmt.setInt(4, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("correlativo").getAsInt());
+//				stmt.setInt(4, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("correlativo").getAsInt());
+				stmt.setInt(4, 65306);
 				stmt.setString(5, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("codigoProducto").getAsString());
 				stmt.setString(6, unidad);
 				stmt.setInt(7, arreglo.getAsJsonArray().get(x).getAsJsonObject().get("cantidad").getAsInt());

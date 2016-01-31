@@ -11,16 +11,16 @@
             return 'Cargando, espere por favor...';
         },
         formatRecordsPerPage: function (pageNumber) {
-            return pageNumber + ' registros por página';
+            return pageNumber + ' items por p\u00E1gina';
         },
         formatShowingRows: function (pageFrom, pageTo, totalRows) {
-            return 'Mostrando ' + pageFrom + ' a ' + pageTo + ' de ' + totalRows + ' filas';
+            return 'Mostrando ' + pageFrom + ' a ' + pageTo + ' de ' + totalRows + ' items.';
         },
         formatSearch: function () {
             return 'Buscar';
         },
         formatNoMatches: function () {
-            return 'No se encontraron registros';
+            return 'No se encontraron resultados para esta tabla.';
         },
         formatAllRows: function () {
             return 'Todo';

@@ -1,6 +1,6 @@
 /**
  * @author zhixin wen <wenzhixin2010@gmail.com>
- * version: 1.8.1
+ * version: 1.10.0
  * https://github.com/wenzhixin/bootstrap-table/
  */
 
@@ -11,13 +11,13 @@
     border-radius: 1px;
 }
 
-.bootstrap-table .table,
-.bootstrap-table .table > tbody > tr > th,
-.bootstrap-table .table > tfoot > tr > th,
-.bootstrap-table .table > thead > tr > td,
-.bootstrap-table .table > tbody > tr > td,
-.bootstrap-table .table > tfoot > tr > td {
-    padding: 8px !important;
+.bootstrap-table .table:not(.table-condensed),
+.bootstrap-table .table:not(.table-condensed) > tbody > tr > th,
+.bootstrap-table .table:not(.table-condensed) > tfoot > tr > th,
+.bootstrap-table .table:not(.table-condensed) > thead > tr > td,
+.bootstrap-table .table:not(.table-condensed) > tbody > tr > td,
+.bootstrap-table .table:not(.table-condensed) > tfoot > tr > td {
+    padding: 8px;
 }
 
 .bootstrap-table .table.table-no-bordered > thead > tr > th,
@@ -40,15 +40,7 @@
 
 .fixed-table-footer,
 .fixed-table-header {
-    height: 37px; /*cellHeight*/
     overflow: hidden;
-    border-radius: 4px 4px 0 0;
-    -webkit-border-radius: 4px 4px 0 0;
-    -moz-border-radius: 4px 4px 0 0;
-}
-
-.fixed-table-header {
-    border-bottom: 1px solid #dddddd;
 }
 
 .fixed-table-footer {
@@ -72,6 +64,10 @@
     border-left: 1px solid #dddddd;
 }
 
+.fixed-table-container thead th:focus {
+    outline: 0 solid transparent;
+}
+
 .fixed-table-container thead th:first-child {
     border-left: none;
     border-top-left-radius: 4px;
@@ -79,7 +75,8 @@
     -moz-border-radius-topleft: 4px;
 }
 
-.fixed-table-container thead th .th-inner {
+.fixed-table-container thead th .th-inner,
+.fixed-table-container tbody td .th-inner {
     padding: 8px;
     line-height: 24px;
     vertical-align: top;
@@ -265,13 +262,23 @@
 
 .bootstrap-table .table > thead > tr > th {
     vertical-align: bottom;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 1px solid #ddd;
 }
 
 /* support bootstrap 3 */
 .bootstrap-table .table thead > tr > th {
     padding: 0;
     margin: 0;
+}
+
+.bootstrap-table .fixed-table-footer tbody > tr > td {
+    padding: 0 !important;
+}
+
+.bootstrap-table .fixed-table-footer .table {
+    border-bottom: none;
+    border-radius: 0;
+    padding: 0 !important;
 }
 
 .pull-right .dropdown-menu {

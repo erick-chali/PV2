@@ -30,7 +30,7 @@
     
     <div class="container">
     	
-      <form action="Login" class="form-signin" method="post" id="formLogin" onsubmit="validarFormulario">
+      <form action="Login" class="form-signin" method="post" id="formLogin" >
       	
         <h2 class="form-signin-heading text-center">Inicio de sesi&oacute;n</h2>
         <label for="ingresaUsuario" class="sr-only">Usuario</label>

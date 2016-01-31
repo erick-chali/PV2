@@ -11,8 +11,8 @@ html {
       -ms-text-size-adjust: 100%;
 }
 body {
-  margin: 0;
-  padding: 0;
+  width: 98%;
+  margin-top: 20px;
 }
 article,
 aside,
@@ -1150,8 +1150,8 @@ img {
   border-radius: 50%;
 }
 hr {
-  margin-top: 3px;
-  margin-bottom: 3px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   border: 0;
   border-top: 1px solid #eee;
 }
@@ -5846,7 +5846,7 @@ button.close {
   z-index: 1070;
   display: block;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 12px;
+  font-size: 18px;
   font-weight: normal;
   line-height: 1.4;
   filter: alpha(opacity=0);
@@ -5854,7 +5854,7 @@ button.close {
 }
 .tooltip.in {
   filter: alpha(opacity=90);
-  opacity: .9;
+  opacity: 1.0;
 }
 .tooltip.top {
   padding: 5px 0;

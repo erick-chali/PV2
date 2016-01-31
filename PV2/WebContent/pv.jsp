@@ -126,6 +126,7 @@
 	                    		<th style="width: 100px;">Observaciones</th>
 	                    		<th class="kit">Es Kit</th>
 	                    		<th class="correlativo"> </th>
+	                    		<th class="alternos"></th>
 	                    		
 	                    	</tr>
 	                    </thead>
@@ -147,6 +148,7 @@
 	                    		<td class="obser"></td>
 	                    		<td class="kit"></td>
 	                    		<td class="correlativo"></td>
+	                    		<td class="alternos"></td>
 	                    	</tr>
 	                    </tbody>
                     </table>
@@ -515,7 +517,7 @@
 					</div>
 				  </div>
 				  <div id="caracteristicas" class="tab-pane fade">
-				  	<embed src="pdf/demo.pdf" width="600" height="500" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html">
+				  	<embed src="pdf/demo.pdf" width="100%" height="500" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html">
 				  </div>
 				</div>
 		        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="margin-top: 10px;" id="cancelar">Cerrar</button>
@@ -527,6 +529,26 @@
 		  </div>
 		</div><!-- FIN DE MODAL -->
 		
+		<!-- Modal PRODUCTOS ALTERNOS-->
+		<div id="productosAlternos" class="modal" role="dialog" data-keyboard="true" tabindex="-1">
+		  <div class="modal-dialog">
+		    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		      	<button type="button" class="close" data-dismiss="modal">&times;</button>
+		        <h4 class="modal-title" id="tituloModalKit">Informaci&oacute;n de Producto</h4>
+		      </div>
+		      <div class="modal-body">
+		      	<div id="contenedorAlternos">
+		      	</div>
+		        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" style="margin-top: 10px;" id="cancelar">Cerrar</button>
+		      </div>
+		      <div class="modal-footer">
+		      	<p id="notificacion" class="text-danger"></p>
+		      </div>
+		    </div>
+		  </div>
+		</div><!-- FIN DE MODAL -->
 		</div>
     <script type="text/javascript" src="js/jquery-1.5.min.js"></script>
 	<script type="text/javascript">
@@ -540,9 +562,7 @@
 	<script src="js/BeatPicker.min.js"></script>
 	<script src="js/jquery.freezeheader.js"></script>
 	<script src="js/pushy.min.js"></script>
-	<script src="js/script.js"></script>
-	<script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
-	<script src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+	<script src="js/scriptPV.js"></script>
 	
     
     
